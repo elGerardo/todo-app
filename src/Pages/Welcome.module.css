@@ -1,0 +1,13 @@
+.container{
+    height: 80vh;
+}
+
+.container h1
+{
+    font-size: 4.2rem;
+}
+
+.container p
+{
+    font-size: 1.8rem;
+}

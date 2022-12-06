@@ -1,0 +1,45 @@
+.primary,
+.secondary
+{
+    padding: 1rem;
+    border-radius: 0.8rem;
+    transition: all 0.3s ease-in-out;
+}
+
+.primary
+{
+    border: none;
+    background-color: #0a0e33;
+    color: #FFFFFF;
+}
+
+.primary:hover
+{
+    background-color: #FFFFFF;
+    color: #0a0e33;
+}
+
+.secondary
+{
+    border: 1px solid #0a0e33;
+    color: #0a0e33;
+}
+
+.secondary:hover
+{
+    background-color: #FFFFFF;
+    border: 1px solid #FFFFFF;
+    color: #0a0e33;
+}
+
+.header_style
+{
+    padding: 0.25rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+}
+
+.header_style:hover
+{
+    border: none;
+}

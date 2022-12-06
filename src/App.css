@@ -11,7 +11,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 16px;
-  color: #024040;
+  color: #191d20;
   overflow-x: hidden;
   background-color: #eeeeee;
 }
@@ -19,4 +19,15 @@ body {
 a
 {
   text-decoration: none;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"]
+{
+  font-size: 1.8rem;
+  outline: none;
+  border: 0;
+  transition: none;
+  box-shadow: none;
 }
