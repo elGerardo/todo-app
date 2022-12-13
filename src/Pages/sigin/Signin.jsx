@@ -1,16 +1,18 @@
 import style from "./Signin.module.css";
 import buttons from "../../assets/global/buttons.module.css";
-import { Container, Form } from "react-bootstrap";
+import { Container, Form, Spinner } from "react-bootstrap";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Users } from "../../services/Users";
 
-let useField = ({ type }) => {
+let useField = ({ type, required }) => {
   let [value, setValue] = useState("");
   let onChange = (e) => {
     setValue(e.target.value);
   };
 
   return {
+    required,
     type,
     value,
     onChange,
@@ -18,22 +20,44 @@ let useField = ({ type }) => {
 };
 
 let Signin = () => {
-  let firstName = useField({ type: "text" });
-  let lastName = useField({ type: "text" });
-  let email = useField({ type: "email" });
-  let password = useField({ type: "password" });
-  let confirmPassword = useField({ type: "password" });
+  let firstName = useField({ type: "text", required: true });
+  let lastName = useField({ type: "text", required: true });
+  let userName = useField({ type: "text", required: true });
+  let email = useField({ type: "email", required: true });
+  let password = useField({ type: "password", required: true });
+  let confirmPassword = useField({ type: "password", required: true });
 
-  let handleSubmit = (e) => {
+  //0 filling fields, 1 is saving data, 2 success
+  let [isLoading, setIsLoading] = useState(0);
+  let [passwordMessage, setPasswordMessage] = useState("");
+
+  let handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(password);
+    console.log(confirmPassword);
+    if(password.value !== confirmPassword.value){
+      setPasswordMessage("Passwords are not same");
+      return;
+    }
+    setPasswordMessage("");
+    setIsLoading(1);
     let postData = {
-      firstName: firstName.value,
-      lastName: lastName.value,
+      username: userName,
+      first_name: firstName.value,
+      last_name: lastName.value,
       email: email.value,
       password: password.value,
       confirmPassword: confirmPassword.value,
     };
-    console.log(postData);
+
+    await new Users().register(postData).then((response) => {
+      if (response.status == 0) {
+        console.log(response);
+        localStorage.setItem("token", JSON.stringify(response.token));
+        setIsLoading(2);
+        return;
+      }
+    });
   };
 
   let content = (
@@ -60,27 +84,60 @@ let Signin = () => {
             <div className={`d-flex w-100`}>
               <Form.Group className={`w-50 m-2`}>
                 <Form.Label>First Name</Form.Label>
-                <Form.Control {...firstName} />
+                <Form.Control
+                  {...firstName}
+                  disabled={isLoading !== 2 ? false : true}
+                />
               </Form.Group>
               <Form.Group className={`w-50 m-2`}>
                 <Form.Label>Last Name</Form.Label>
-                <Form.Control {...lastName} />
+                <Form.Control
+                  {...lastName}
+                  disabled={isLoading !== 2 ? false : true}
+                />
               </Form.Group>
             </div>
             <Form.Group className={`mx-1 my-3`}>
+              <Form.Label>User Name</Form.Label>
+              <Form.Control
+                {...userName}
+                disabled={isLoading !== 2 ? false : true}
+              />
+            </Form.Group>
+            <Form.Group className={`mx-1 my-3`}>
               <Form.Label>Email</Form.Label>
-              <Form.Control {...email} />
+              <Form.Control
+                {...email}
+                disabled={isLoading !== 2 ? false : true}
+              />
             </Form.Group>
             <Form.Group className={`mx-1 my-3`}>
               <Form.Label>Password</Form.Label>
-              <Form.Control {...password} />
+              <Form.Control
+                {...password}
+                disabled={isLoading !== 2 ? false : true}
+              />
             </Form.Group>
             <Form.Group className={`mx-1 my-3`}>
               <Form.Label>Confirm Password</Form.Label>
-              <Form.Control {...confirmPassword} />
+              <Form.Control
+                {...confirmPassword}
+                disabled={isLoading !== 2 ? false : true}
+              />
             </Form.Group>
-            <button type="submit" className={`${buttons.primary}`}>
-              Create Account
+            <p className={`text-danger`}>{passwordMessage}</p>
+            <button
+              type="submit"
+              disabled={isLoading !== 2 ? false : true}
+              className={`${buttons.primary}`}
+            >
+              {isLoading === 0 ? (
+                <span>Create Account</span>
+              ) : isLoading === 1 ? (
+                <Spinner animation="border" variant="light" />
+              ) : (
+                <span>Success</span>
+              )}
             </button>
           </Form>
         </div>
