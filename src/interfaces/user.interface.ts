@@ -5,3 +5,8 @@ export interface RegisterUser {
   last_name: string;
   password: string;
 }
+
+export interface LoginUser {
+  username: string;
+  password: string;
+}
