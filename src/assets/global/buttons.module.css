@@ -1,5 +1,6 @@
 .primary,
-.secondary
+.secondary,
+.dashboard
 {
     padding: 1rem;
     border-radius: 0.8rem;
@@ -30,6 +31,18 @@
     background-color: #FFFFFF;
     border: 1px solid #FFFFFF;
     color: #0a0e33;
+}
+
+.dashboard
+{
+    border: none;
+    background-color: #e3e6f1;
+    font-size: 1.6rem;
+}
+
+.dashboard:hover
+{
+    background-color: #cacdd7;
 }
 
 .header_style

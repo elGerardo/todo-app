@@ -76,7 +76,7 @@ let Signin = () => {
       exit={{ opacity: 0, y: 200 }}
     >
       <Container
-        className={` ${style.container} d-flex align-items-center justify-content-center`}
+        className={` ${style.container} my-5 d-flex align-items-center justify-content-center`}
       >
         <div className={`w-50`}>
           <h1>Create Account</h1>

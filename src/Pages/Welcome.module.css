@@ -1,13 +1,11 @@
-.container{
-    height: 80vh;
+.container {
+  height: 100vh;
 }
 
-.container h1
-{
-    font-size: 4.2rem;
+.container h1 {
+  font-size: 4.2rem;
 }
 
-.container p
-{
-    font-size: 1.8rem;
+.container p {
+  font-size: 1.8rem;
 }

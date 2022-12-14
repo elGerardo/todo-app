@@ -1,0 +1,36 @@
+body
+{
+    overflow-y: scroll;
+}
+
+.container
+{
+    margin-top: 5rem;
+}
+
+.container .item_container
+{
+    padding: 2rem;
+    width: 75%;
+    columns: 3;
+}
+
+.container .item
+{
+    height: fit-content;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: #c1c1ff;
+    break-inside:avoid;
+}
+
+.container .item p
+{
+    width: fit-content;
+}
+
+.container .item img
+{
+    width: 100%;
+}
+

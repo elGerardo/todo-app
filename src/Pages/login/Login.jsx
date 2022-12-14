@@ -49,7 +49,7 @@ let Login = () => {
       exit={{ opacity: 0, y: 200 }}
     >
       <Container
-        className={`${style.container} d-flex align-items-center justify-content-center`}
+        className={`${style.container} my-5 d-flex align-items-center justify-content-center`}
       >
         <Form onSubmit={handleSubmit}>
           <h1>Login</h1>
