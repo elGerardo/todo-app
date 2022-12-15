@@ -38,7 +38,7 @@ let Dashboard = () => {
               provident optio fuga?
             </p>
           </div>
-          <div className={`${style.item} rounded shadow`}>
+          <div className={`${style.item} rounded shadow-lg`}>
             <img
               className={`rounded`}
               src="https://assets.reedpopcdn.com/mario-kart-8-deluxe-dlc-release-time-9016-1647514624847.jpg/BROK/thumbnail/1600x900/format/jpg/quality/80/mario-kart-8-deluxe-dlc-release-time-9016-1647514624847.jpg"
@@ -51,63 +51,63 @@ let Dashboard = () => {
               provident optio fuga?
             </p>
           </div>
-          <div className={`${style.item} rounded shadow`}>
+          <div className={`${style.item} rounded shadow-lg`}>
             <h1>Play Mario Kart</h1>
             <p>
               Lorem, ipsum dolor omnis facilis quas impedit maxime aut minus
               esse quos facere provident optio fuga?
             </p>
           </div>
-          <div className={`${style.item} rounded shadow`}>
+          <div className={`${style.item} rounded shadow-lg`}>
             <h1>Play Mario Kart</h1>
             <p>
               Lorem, facilis quas impedit maxime aut minus esse quos facere
               provident optio fuga?
             </p>
           </div>
-          <div className={`${style.item} rounded shadow`}>
+          <div className={`${style.item} rounded shadow-lg`}>
             <h1>Play Mario Kart</h1>
             <p>
               Lorem, facilis quas impedit maxime aut minus esse quos facere
               provident optio fuga?
             </p>
           </div>
-          <div className={`${style.item} rounded shadow`}>
+          <div className={`${style.item} rounded shadow-lg`}>
             <h1>Play Mario Kart</h1>
             <p>
               Lorem, facilis quas impedit maxime aut minus esse quos facere
               provident optio fuga?
             </p>
           </div>
-          <div className={`${style.item} rounded shadow`}>
+          <div className={`${style.item} rounded shadow-lg`}>
             <h1>Play Mario Kart</h1>
             <p>
               Lorem, facilis quas impedit maxime aut minus esse quos facere
               provident optio fuga?
             </p>
           </div>
-          <div className={`${style.item} rounded shadow`}>
+          <div className={`${style.item} rounded shadow-lg`}>
             <h1>Play Mario Kart</h1>
             <p>
               Lorem, facilis quas impedit maxime aut minus esse quos facere
               provident optio fuga?
             </p>
           </div>
-          <div className={`${style.item} rounded shadow`}>
+          <div className={`${style.item} rounded shadow-lg`}>
             <h1>Play Mario Kart</h1>
             <p>
               Lorem, facilis quas impedit maxime aut minus esse quos facere
               provident optio fuga?
             </p>
           </div>
-          <div className={`${style.item} rounded shadow`}>
+          <div className={`${style.item} rounded shadow-lg`}>
             <h1>Play Mario Kart</h1>
             <p>
               Lorem, facilis quas impedit maxime aut minus esse quos facere
               provident optio fuga?
             </p>
           </div>
-          <div className={`${style.item} rounded shadow`}>
+          <div className={`${style.item} rounded shadow-lg`}>
             <h1>Play Mario Kart</h1>
             <p>
               Lorem, facilis quas impedit maxime aut minus esse quos facere

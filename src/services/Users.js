@@ -4,7 +4,7 @@ export class Users {
     return await fetch(`${BASE_URL}/users/register`, {
       method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     })
