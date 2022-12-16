@@ -1,6 +1,6 @@
 export interface Task {
   title: string;
-  user_id: number;
+  user_id: number | null;
   type: string;
   description: string;
   items: [TaskItem] | null;
