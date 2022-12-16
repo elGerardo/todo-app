@@ -56,3 +56,9 @@
 {
     border: none;
 }
+
+.primary_selected
+{
+    background-color: #FFFFFF;
+    color: #0a0e33;
+}

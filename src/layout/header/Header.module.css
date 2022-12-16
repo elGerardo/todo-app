@@ -1,20 +1,12 @@
 .header
 {
+    width: 100%;
+    position: relative;
     backdrop-filter: blur(5rem);
-    z-index: 2;
+    z-index: 3;
 }
 
 .header button
 {
     padding: 0.25rem 1rem;
-}
-
-.control
-{
-    background-color: #eeeeee;
-    font-size: 1.8rem;
-    outline: none;
-    border: 0;
-    transition: none;
-    box-shadow: none;
 }

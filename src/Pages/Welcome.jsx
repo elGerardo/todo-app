@@ -36,6 +36,11 @@ let Welcome = () => {
             <Link to="signin" className={`${buttons.primary} d-inline mx-4`}>
               Create Account
             </Link>
+            <div className={`w-100 d-flex justify-content-center`}>
+              <Link to="dashboard" className={`${buttons.primary} d-block m-5 w-50`}>
+                Get In as Guess
+              </Link>
+            </div>
           </div>
         </div>
       </Container>
