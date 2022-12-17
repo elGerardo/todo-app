@@ -1,16 +1,15 @@
 import style from "./Dashboard.module.css";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Container, Modal, Form, Spinner } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import buttons from "../../assets/global/buttons.module.css";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTableCells,
   faPlus,
   faNoteSticky,
   faList,
-  faXmark,
+  faBars,
 } from "@fortawesome/free-solid-svg-icons";
 import { Tasks } from "../../services/Tasks";
 
@@ -30,6 +29,7 @@ let Note = (props) => {
   let [isCloseModal, setIsCloseModal] = useState(false);
   let [checkboxes, setCheckboxes] = useState([]);
   let [checkboxesLength, setCheckboxesLength] = useState(0);
+  let [missingTitleMessage, setMissingTitleMessage] = useState("");
   let title = useField({ type: "text", placeholder: "Write a title..." });
   let description = useField({
     as: "textarea",
@@ -39,8 +39,14 @@ let Note = (props) => {
 
   let createTask = async (e) => {
     e.preventDefault();
+
     if (isCloseModal) {
       props.emititems(null);
+      return;
+    }
+
+    if (title.value === "") {
+      setMissingTitleMessage("Please fill up title field.");
       return;
     }
 
@@ -83,15 +89,14 @@ let Note = (props) => {
     let item = checkboxes;
 
     //delete old values
-    /*if(value == "")
-    {
+    if (value == "" && item.length === index + 1) {
       item.splice(index, 1);
       setCheckboxes(item);
       setCheckboxesLength(item.length);
       return;
-    }*/
+    }
 
-    let itemObject = { index: index, text: value };
+    let itemObject = { index: index, text: value, status: 0 };
     //update old values
     if (item.length - 1 >= index) {
       item[index] = itemObject;
@@ -128,6 +133,7 @@ let Note = (props) => {
             className={`${style.control} `}
             {...title}
           ></Form.Control>
+          <p className={`text-danger`}>{missingTitleMessage}</p>
         </Form.Group>
         <Form.Group>
           <Form.Control
@@ -139,6 +145,7 @@ let Note = (props) => {
           Array.from(Array(checkboxesLength + 1).keys()).map((key) => {
             return (
               <motion.div
+                key={key}
                 initial={{ opacity: 0, y: -25 }}
                 transition={{ y: { duration: 0.25 } }}
                 animate={{
@@ -162,7 +169,6 @@ let Note = (props) => {
                     type="text"
                     className={`${style.control} w-25 py-0 align-middle d-inline`}
                   />
-                  <FontAwesomeIcon icon={faXmark} className={`ms-5 d-inline`} />
                 </Form.Group>
               </motion.div>
             );
@@ -231,11 +237,73 @@ let CustomModal = (props) => {
   );
 };
 
+let Detail = (props) => {
+  let [isLoading, setIsLoading] = useState(true);
+  let [item, setItem] = useState({});
+
+  let getData = async () => {
+    let items = JSON.parse(localStorage.getItem("tasks"));
+    setItem(items[props.selectedData.index]);
+  };
+
+  useEffect(() => {
+    if (props.selectedData.id !== null) {
+      scroll(0, 0);
+      getData();
+      setIsLoading(false);
+    }
+  }, [props]);
+
+  let content = (
+    <div>
+      <div
+        className={`${style.frontground}`}
+        onClick={() => {
+          props.emitselecteddata({ id: null });
+          document.getElementById("frontground").style.display = "none";
+        }}
+        id="frontground"
+      ></div>
+      <AnimatePresence>
+        {props.selectedData.id && (
+          <motion.div
+            className={`w-50 p-5 rounded shadow-lg ${style.motion_div}`}
+            layoutId={props.selectedData.id}
+          >
+            {!isLoading ? (
+              <div>
+                <h1>{item.title}</h1>
+                <p>{item.description}</p>
+                {item.items !== null &&
+                  item.items.map((item, index) => {
+                    return (
+                      <Form.Group key={item.text + "-" + index}>
+                        <Form.Check
+                          label={item.text}
+                          id={item.text + "-" + index}
+                        />
+                      </Form.Group>
+                    );
+                  })}
+              </div>
+            ) : (
+              <Spinner></Spinner>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+  return content;
+};
+
 //page
 let Dashboard = () => {
   let [tasks, setTasks] = useState(null);
   let [isLoading, setIsLoading] = useState(true);
   let [modalShow, setModalShow] = useState(false);
+  let [isContentGrid, setIsContentGrid] = useState(true);
+  let [selectedData, setSelectedData] = useState({ id: null });
 
   let getTasks = () => {
     //if is loged
@@ -270,9 +338,15 @@ let Dashboard = () => {
         <div
           className={`${style.control_header} w-100 position-fixed end-0 d-flex flex-row-reverse py-3`}
         >
-          <button className={`${buttons.primary}`}>
-            <FontAwesomeIcon icon={faTableCells} /> Order
-          </button>
+          {
+            <button
+              onClick={() => setIsContentGrid(!isContentGrid)}
+              className={`${buttons.primary}`}
+            >
+              <FontAwesomeIcon icon={isContentGrid ? faTableCells : faBars} />{" "}
+              Order
+            </button>
+          }
           <button
             className={`${buttons.primary} mx-3`}
             onClick={() => setModalShow(true)}
@@ -280,14 +354,6 @@ let Dashboard = () => {
             <FontAwesomeIcon icon={faPlus} /> Add
           </button>
         </div>
-        <CustomModal
-          show={modalShow}
-          emititems={(items) => {
-            if (items !== null) setTasks(items);
-            setModalShow(false);
-          }}
-          onHide={() => setModalShow(false)}
-        />
       </motion.div>
       {/*content*/}
       <motion.div
@@ -308,21 +374,34 @@ let Dashboard = () => {
           className={`${style.container} d-flex align-items-center justify-content-center position-relative`}
         >
           {tasks !== null ? (
-            <div className={`${style.item_container}`}>
+            <div
+              className={`${style.item_container}`}
+              style={isContentGrid ? { columns: "3" } : null}
+            >
               {!isLoading ? (
-                tasks.map((task) => {
+                tasks.map((task, index) => {
                   return (
-                    <div
-                      key={Math.random()}
+                    <motion.div
                       className={`${style.item} rounded shadow`}
+                      key={task + "-" + index}
+                      layoutId={task + "-" + index}
+                      onClick={() => {
+                        setSelectedData({
+                          id: task + "-" + index,
+                          index: index,
+                          isLoged: false,
+                        });
+                        document.getElementById("frontground").style.display =
+                          "block";
+                      }}
                     >
-                      <img
+                      {/*<img
                         className={`rounded`}
                         src="https://assets.reedpopcdn.com/mario-kart-8-deluxe-dlc-release-time-9016-1647514624847.jpg/BROK/thumbnail/1600x900/format/jpg/quality/80/mario-kart-8-deluxe-dlc-release-time-9016-1647514624847.jpg"
-                      />
+                  />*/}
                       <h1>{task.title}</h1>
-                      <p>{task.description}</p>
-                    </div>
+                      <p>{task.description.substr(0, 126)} ...</p>
+                    </motion.div>
                   );
                 })
               ) : (
@@ -339,6 +418,20 @@ let Dashboard = () => {
           )}
         </Container>
       </motion.div>
+
+      {/*components*/}
+      <CustomModal
+        show={modalShow}
+        emititems={(items) => {
+          if (items !== null) setTasks(items);
+          setModalShow(false);
+        }}
+        onHide={() => setModalShow(false)}
+      />
+      <Detail
+        selectedData={selectedData}
+        emitselecteddata={(data) => setSelectedData(data)}
+      />
     </div>
   );
 

@@ -29,8 +29,8 @@ body
     margin-top: 5rem;
     padding: 2rem;
     width: 75%;
-    columns: 3;
 }
+
 
 .container .item
 {
@@ -39,6 +39,7 @@ body
     padding: 1.5rem;
     background: #ffffff;
     break-inside:avoid;
+    transition: none;
 }
 
 .container .item p
@@ -61,3 +62,31 @@ body
     box-shadow: none;
 }
 
+
+.frontground
+{
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 100vh;
+    background-color: none;
+    backdrop-filter: blur(0.5rem);
+    z-index: 4;
+    transition: all 0.3s ease-in-out;
+}
+
+.motion_div
+{
+    z-index: 5;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 5rem auto;
+    overflow-y: scroll;
+    background-color: rgba(255, 255, 255, 0.9);
+}
