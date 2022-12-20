@@ -10,9 +10,9 @@ const register = async ({ body }: Request, res: Response) => {
   }
 };
 
-const login = async ({ body }:Request, res: Response) => {
+const login = async ({ body, headers }:Request, res: Response) => {
   try {
-    await loginUser(body, res);
+    await loginUser(headers, res);
   } catch (e) {
     res.status(500);
     res.json("ERROR LOGIN USER");

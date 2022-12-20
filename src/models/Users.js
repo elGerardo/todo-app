@@ -24,16 +24,19 @@ const registerUser = (body, res) => __awaiter(void 0, void 0, void 0, function* 
     });
 });
 exports.registerUser = registerUser;
-const loginUser = (body, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let { username, password } = body;
+const loginUser = (headers, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let { username, password } = headers;
     yield mysql_1.connection.query(`SELECT username, password FROM users where username = "${username}" and password = "${password}"`, (err, result) => {
         if (err)
             res.json({ message: "ERROR LOGIN", error: err, status: 500 });
         if (result.length == 0) {
-            res.json({ message: "username or password incorrect", status: 500 });
+            res.json({ message: "Username or Password Incorrect", status: 1 });
             return;
         }
-        res.json({ token: btoa(`${username}-${new Date().toJSON()}`) });
+        res.json({
+            token: btoa(`${username}-${new Date().toJSON()}`),
+            status: 0,
+        });
     });
 });
 exports.loginUser = loginUser;

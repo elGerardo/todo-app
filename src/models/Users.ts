@@ -17,17 +17,20 @@ const registerUser = async (body: RegisterUser, res: Response) => {
   );
 };
 
-const loginUser = async (body: LoginUser, res: Response) => {
-  let { username, password } = body;
+const loginUser = async (headers: any, res: Response) => {
+  let { username, password } = headers;
   await connection.query(
     `SELECT username, password FROM users where username = "${username}" and password = "${password}"`,
     (err, result) => {
       if (err) res.json({ message: "ERROR LOGIN", error: err, status: 500 });
       if (result.length == 0) {
-        res.json({ message: "username or password incorrect", status: 500 });
+        res.json({ message: "Username or Password Incorrect", status: 1 });
         return;
       }
-      res.json({ token: btoa(`${username}-${new Date().toJSON()}`) });
+      res.json({
+        token: btoa(`${username}-${new Date().toJSON()}`),
+        status: 0,
+      });
     }
   );
 };

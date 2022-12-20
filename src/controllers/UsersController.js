@@ -21,9 +21,9 @@ const register = ({ body }, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.register = register;
-const login = ({ body }, res) => __awaiter(void 0, void 0, void 0, function* () {
+const login = ({ body, headers }, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield (0, Users_1.loginUser)(body, res);
+        yield (0, Users_1.loginUser)(headers, res);
     }
     catch (e) {
         res.status(500);
