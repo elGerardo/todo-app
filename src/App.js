@@ -15,7 +15,7 @@ app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(routes_1.router);
 dotenv_1.default.config();
-db.then(connection => { console.log("Database Connection Ready!"); });
+//db.then(connection => { console.log("Database Connection Ready!"); })
 app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
 });

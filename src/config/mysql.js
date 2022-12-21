@@ -20,7 +20,6 @@ const connection = mysql_1.default.createConnection({
     user: `${process.env.DB_USERNAME}`,
     password: `${process.env.DB_PASSWORD}`,
     database: `${process.env.DB_DATABASE}`,
-    connectTimeout: 30000
 });
 exports.connection = connection;
 const Connect = () => __awaiter(void 0, void 0, void 0, function* () {

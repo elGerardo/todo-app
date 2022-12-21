@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(router);
 dotenv.config();
 
-db.then(connection => { console.log("Database Connection Ready!") })
+//db.then(connection => { console.log("Database Connection Ready!"); })
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at https://localhost:${port}`);

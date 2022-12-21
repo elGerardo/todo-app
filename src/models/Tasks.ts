@@ -13,6 +13,7 @@ const getTasks = async (headers: any, res: Response) => {
         message: "Success",
         data: result,
       });
+      return;
     }
   );
 };
@@ -29,6 +30,12 @@ const findTask = async (id: any, res: Response) => {
         message: "Success",
         data: { ...result[0], items: items },
       };
+      if(result.length == 0)
+      {
+        res.json(resData);
+        return;
+      }
+
       if (result[0].type == "Note") {
         res.json(resData);
         return;
@@ -107,6 +114,7 @@ const deleteTask = async (body: any, res: Response) => {
       `DELETE FROM tasks WHERE id = ${id}`,
       (err, result) => {
         if (err) res.json({ message: "ERROR DELETE TASK", status: 500 });
+        connection.end();
         res.json({
           status: 0,
           message: "Success",

@@ -21,6 +21,7 @@ const getTasks = (headers, res) => __awaiter(void 0, void 0, void 0, function* (
             message: "Success",
             data: result,
         });
+        return;
     });
 });
 exports.getTasks = getTasks;
@@ -35,6 +36,10 @@ const findTask = (id, res) => __awaiter(void 0, void 0, void 0, function* () {
             message: "Success",
             data: Object.assign(Object.assign({}, result[0]), { items: items }),
         };
+        if (result.length == 0) {
+            res.json(resData);
+            return;
+        }
         if (result[0].type == "Note") {
             res.json(resData);
             return;
@@ -100,6 +105,7 @@ const deleteTask = (body, res) => __awaiter(void 0, void 0, void 0, function* ()
         yield mysql_1.connection.query(`DELETE FROM tasks WHERE id = ${id}`, (err, result) => {
             if (err)
                 res.json({ message: "ERROR DELETE TASK", status: 500 });
+            mysql_1.connection.end();
             res.json({
                 status: 0,
                 message: "Success",
