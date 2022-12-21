@@ -10,6 +10,7 @@ import {
   faNoteSticky,
   faList,
   faBars,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { Tasks } from "../../services/Tasks";
 
@@ -26,6 +27,8 @@ let useField = ({ type, required, as, placeholder }) => {
 
 //components
 let Note = (props) => {
+  let [isLoading, setIsLoading] = useState(false);
+  let [isSuccess, setIsSuccess] = useState(false);
   let [isCloseModal, setIsCloseModal] = useState(false);
   let [checkboxes, setCheckboxes] = useState([]);
   let [checkboxesLength, setCheckboxesLength] = useState(0);
@@ -50,6 +53,7 @@ let Note = (props) => {
       return;
     }
 
+    setIsLoading(true);
     let postData = {
       title: title.value,
       description: description.value,
@@ -64,6 +68,9 @@ let Note = (props) => {
       user_id = JSON.parse(localStorage.getItem("login")).user_id;
       await new Tasks().create(postData, user_id).then((response) => {
         if (response.status == 0) {
+          setIsLoading(false);
+          setIsSuccess(true);
+          props.emitreload(true);
           return;
         }
       });
@@ -179,9 +186,20 @@ let Note = (props) => {
         <div className={`d-flex flex-row-reverse`}>
           <button
             onClick={() => setIsCloseModal(false)}
-            className={`${buttons.primary} ms-3 px-3 py-2`}
+            className={`${
+              !isLoading ? buttons.primary : buttons.primary_loading
+            } ms-3 px-3 py-2`}
+            disabled={isLoading || isSuccess}
           >
-            Finish
+            {!isLoading ? (
+              isSuccess ? (
+                <span>Success!</span>
+              ) : (
+                <span>Finish</span>
+              )
+            ) : (
+              <Spinner className={`text-center`} variant="white" />
+            )}
           </button>
           <button
             onClick={() => setIsCloseModal(true)}
@@ -230,6 +248,9 @@ let CustomModal = (props) => {
             emititems={(items) => {
               props.emititems(items);
             }}
+            emitreload={(value) => {
+              props.emitreload(value);
+            }}
           />
         </div>
       </Modal.Body>
@@ -241,16 +262,39 @@ let Detail = (props) => {
   let [isLoading, setIsLoading] = useState(true);
   let [item, setItem] = useState({});
 
-  let getData = async () => {
+  let findTask = async () => {
+    let loginData = localStorage.getItem("login");
+    if (loginData != null) {
+      await new Tasks().find(props.selectedData.id).then((response) => {
+        if (response.status == 0) {
+          setItem(response.data);
+          setIsLoading(false);
+          return;
+        }
+      });
+      return;
+    }
+
     let items = JSON.parse(localStorage.getItem("tasks"));
     setItem(items[props.selectedData.index]);
+    setIsLoading(false);
+    return;
   };
+
+  let updateItem = async (id) => {
+    await Tasks().updateItem(id).then(response => {
+      if(response.status === 0)
+      {
+        
+      }
+    });
+  }
 
   useEffect(() => {
     if (props.selectedData.id !== null) {
+      setIsLoading(true);
       scroll(0, 0);
-      getData();
-      setIsLoading(false);
+      findTask();
     }
   }, [props]);
 
@@ -277,10 +321,20 @@ let Detail = (props) => {
                 {item.items !== null &&
                   item.items.map((item, index) => {
                     return (
-                      <Form.Group key={item.text + "-" + index}>
+                      <Form.Group
+                        key={
+                          item.task_item_id !== undefined
+                            ? item.task_item_id
+                            : item.text + "-" + index
+                        }
+                      >
                         <Form.Check
                           label={item.text}
-                          id={item.text + "-" + index}
+                          id={
+                            item.task_item_id !== undefined
+                              ? item.task_item_id
+                              : item.text + "-" + index
+                          }
                         />
                       </Form.Group>
                     );
@@ -302,16 +356,57 @@ let Dashboard = () => {
   let [tasks, setTasks] = useState(null);
   let [isLoading, setIsLoading] = useState(true);
   let [modalShow, setModalShow] = useState(false);
-  let [isContentGrid, setIsContentGrid] = useState(true);
+  let [isContentGrid, setIsContentGrid] = useState(false);
   let [selectedData, setSelectedData] = useState({ id: null });
 
   let getTasks = () => {
     //if is loged
+    let loginData = localStorage.getItem("login");
+    if (loginData != null) {
+      let data = JSON.parse(loginData);
+      new Tasks().get(data.user_id).then((response) => {
+        if (response.status == 0) {
+          if (response.data.length !== 0) {
+            setTasks(response.data);
+          }
+          setIsLoading(false);
+          return;
+        }
+      });
+      return;
+    }
     //await
 
     setTasks(JSON.parse(localStorage.getItem("tasks")));
     setIsLoading(false);
     return;
+  };
+
+  let reloadTasks = async () => {
+    let loginData = localStorage.getItem("login");
+    if (loginData != null) {
+      let data = JSON.parse(loginData);
+      await new Tasks().get(data.user_id).then((response) => {
+        if (response.status == 0) {
+          if (response.data.length !== 0) {
+            setTasks(response.data);
+          } else {
+            setTasks(null);
+          }
+          setModalShow(false);
+          setIsLoading(false);
+          return;
+        }
+      });
+    }
+  };
+
+  let deleteTask = async ({ id, type }) => {
+    await new Tasks().deleteItem({ id, type }).then(async (response) => {
+      if (response.status == 0) {
+        await reloadTasks();
+      }
+    });
   };
 
   useEffect(() => {
@@ -382,25 +477,41 @@ let Dashboard = () => {
                 tasks.map((task, index) => {
                   return (
                     <motion.div
-                      className={`${style.item} rounded shadow`}
-                      key={task + "-" + index}
-                      layoutId={task + "-" + index}
-                      onClick={() => {
-                        setSelectedData({
-                          id: task + "-" + index,
-                          index: index,
-                          isLoged: false,
-                        });
-                        document.getElementById("frontground").style.display =
-                          "block";
-                      }}
+                      className={`${style.item} rounded shadow position-relative`}
+                      key={task.id !== undefined ? task.id : task + "-" + index}
+                      layoutId={
+                        task.id !== undefined ? task.id : task + "-" + index
+                      }
                     >
                       {/*<img
                         className={`rounded`}
                         src="https://assets.reedpopcdn.com/mario-kart-8-deluxe-dlc-release-time-9016-1647514624847.jpg/BROK/thumbnail/1600x900/format/jpg/quality/80/mario-kart-8-deluxe-dlc-release-time-9016-1647514624847.jpg"
                   />*/}
-                      <h1>{task.title}</h1>
-                      <p>{task.description.substr(0, 126)} ...</p>
+                      <div
+                        className={`w-75`}
+                        onClick={() => {
+                          setSelectedData({
+                            id:
+                              task.id !== undefined
+                                ? task.id
+                                : task + "-" + index,
+                            index: index,
+                            isLoged: false,
+                          });
+                          document.getElementById("frontground").style.display =
+                            "block";
+                        }}
+                      >
+                        <h1>{task.title}</h1>
+                        <p>{task.description.substr(0, 126)} ...</p>
+                      </div>
+                      <FontAwesomeIcon
+                        icon={faTrash}
+                        onClick={() =>
+                          deleteTask({ id: task.id, type: task.type })
+                        }
+                        className={`${buttons.primary_badge} position-absolute top-0 end-0 m-3`}
+                      />
                     </motion.div>
                   );
                 })
@@ -421,6 +532,9 @@ let Dashboard = () => {
 
       {/*components*/}
       <CustomModal
+        emitreload={(value) => {
+          reloadTasks();
+        }}
         show={modalShow}
         emititems={(items) => {
           if (items !== null) setTasks(items);

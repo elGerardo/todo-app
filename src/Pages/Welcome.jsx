@@ -44,7 +44,7 @@ let Login = () => {
         setTimeout(() => {
           localStorage.setItem(
             "login",
-            JSON.stringify({ token: response.token })
+            JSON.stringify({ token: response.token, user_id: response.user_id })
           );
           setIsLoading(false);
           setIsSuccess(true);
