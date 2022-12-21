@@ -27,7 +27,7 @@ exports.getTasks = getTasks;
 const findTask = (id, res) => __awaiter(void 0, void 0, void 0, function* () {
     let items = null;
     let resData;
-    yield mysql_1.connection.query(`SELECT title AS title, type AS type, description AS description, percent AS percent, status AS status FROM tasks where id = ${id}`, (err, result) => __awaiter(void 0, void 0, void 0, function* () {
+    yield mysql_1.connection.query(`SELECT title AS title, type AS type, status AS status, description AS description, percent AS percent, status AS status FROM tasks where id = ${id}`, (err, result) => __awaiter(void 0, void 0, void 0, function* () {
         if (err)
             res.json({ message: "ERROR FIND TASK", status: 500 });
         resData = {
