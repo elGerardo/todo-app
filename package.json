@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "TODO App",
   "main": "./src/App.ts",
-  "type":"module",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
@@ -25,6 +25,7 @@
     "@types/node": "^18.11.11",
     "concurrently": "^7.6.0",
     "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1",
     "typescript": "^4.9.3"
   }
 }
