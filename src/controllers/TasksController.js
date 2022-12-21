@@ -11,9 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteItem = exports.find = exports.get = exports.create = void 0;
 const Tasks_1 = require("../models/Tasks");
-const get = ({ headers }, res) => __awaiter(void 0, void 0, void 0, function* () {
+const get = ({ headers }, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield (0, Tasks_1.getTasks)(headers, res);
+        yield (0, Tasks_1.getTasks)(headers, res, next);
     }
     catch (e) {
         res.status(500);
@@ -23,7 +23,6 @@ const get = ({ headers }, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.get = get;
 const find = ({ query }, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log(query.id);
         let id = query.id;
         yield (0, Tasks_1.findTask)(id, res);
     }

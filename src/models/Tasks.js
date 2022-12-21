@@ -11,17 +11,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteTask = exports.findTask = exports.getTasks = exports.createTask = void 0;
 const mysql_1 = require("../config/mysql");
-const getTasks = (headers, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let { user_id } = headers;
-    yield mysql_1.connection.query(`SELECT id as id, title As title, description AS description, type AS type FROM TASKS WHERE user_id = ${user_id}`, (err, result) => {
-        if (err)
-            res.json({ message: "ERROR GET TASKS", status: 500 });
-        res.json({
-            status: 0,
-            message: "Success",
-            data: result,
+const getTasks = (headers, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    yield mysql_1.connection.connect(() => {
+        let { user_id } = headers;
+        mysql_1.connection.query(`SELECT id as id, title As title, description AS description, type AS type FROM TASKS WHERE user_id = ${user_id}`, (err, result) => {
+            if (err)
+                res.json({ message: "ERROR GET TASKS", status: 500 });
+            res.json({
+                status: 0,
+                message: "Success",
+                data: result,
+            });
         });
-        return;
     });
 });
 exports.getTasks = getTasks;

@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { createTask, getTasks, findTask, deleteTask } from "../models/Tasks";
 
-const get = async ({headers}:Request, res:Response) => {
+const get = async ({headers}:Request, res:Response, next: NextFunction) => {
   try{
-    await getTasks(headers, res);
+    await getTasks(headers, res, next);
   }catch(e){
     res.status(500);
     res.json("ERROR GET TASKS")
@@ -12,7 +12,6 @@ const get = async ({headers}:Request, res:Response) => {
 
 const find =async ({query}:Request, res: Response) => {
   try{
-    console.log(query.id);
     let id = query.id;
     await findTask(id, res);
   }catch(e){

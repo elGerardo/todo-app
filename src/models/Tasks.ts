@@ -1,21 +1,22 @@
-import { connection } from "../config/mysql";
+import { connection, Connect } from "../config/mysql";
 import { Task } from "../interfaces/task.interface";
-import { Response } from "express";
+import { Response, NextFunction } from "express";
 
-const getTasks = async (headers: any, res: Response) => {
-  let { user_id } = headers;
-  await connection.query(
-    `SELECT id as id, title As title, description AS description, type AS type FROM TASKS WHERE user_id = ${user_id}`,
-    (err, result) => {
-      if (err) res.json({ message: "ERROR GET TASKS", status: 500 });
-      res.json({
-        status: 0,
-        message: "Success",
-        data: result,
-      });
-      return;
-    }
-  );
+const getTasks = async (headers: any, res: Response, next: NextFunction) => {
+  await connection.connect(() => {
+    let { user_id } = headers;
+    connection.query(
+      `SELECT id as id, title As title, description AS description, type AS type FROM TASKS WHERE user_id = ${user_id}`,
+      (err, result) => {
+        if (err) res.json({ message: "ERROR GET TASKS", status: 500 });
+        res.json({
+          status: 0,
+          message: "Success",
+          data: result,
+        });
+      }
+    );
+  });
 };
 
 const findTask = async (id: any, res: Response) => {
@@ -30,8 +31,7 @@ const findTask = async (id: any, res: Response) => {
         message: "Success",
         data: { ...result[0], items: items },
       };
-      if(result.length == 0)
-      {
+      if (result.length == 0) {
         res.json(resData);
         return;
       }
