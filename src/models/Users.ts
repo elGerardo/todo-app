@@ -1,6 +1,6 @@
 import { Response } from "express";
 import { connection } from "../config/mysql";
-import { RegisterUser, LoginUser } from "../interfaces/user.interface";
+import { RegisterUser } from "../interfaces/user.interface";
 
 const registerUser = async (body: RegisterUser, res: Response) => {
   let { username, email, first_name, last_name, password } = body;
@@ -20,7 +20,7 @@ const registerUser = async (body: RegisterUser, res: Response) => {
 const loginUser = async (headers: any, res: Response) => {
   let { username, password } = headers;
   await connection.query(
-    `SELECT username, password FROM users where username = "${username}" and password = "${password}"`,
+    `SELECT id, username, password FROM users where username = "${username}" and password = "${password}"`,
     (err, result) => {
       if (err) res.json({ message: "ERROR LOGIN", error: err, status: 500 });
       if (result.length == 0) {
@@ -29,6 +29,7 @@ const loginUser = async (headers: any, res: Response) => {
       }
       res.json({
         token: btoa(`${username}-${new Date().toJSON()}`),
+        user_id: result[0].id,
         status: 0,
       });
     }

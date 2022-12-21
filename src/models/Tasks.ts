@@ -2,6 +2,52 @@ import { connection } from "../config/mysql";
 import { Task } from "../interfaces/task.interface";
 import { Response } from "express";
 
+const getTasks = async (headers: any, res: Response) => {
+  let { user_id } = headers;
+  await connection.query(
+    `SELECT id as id, title As title, description AS description, type AS type FROM TASKS WHERE user_id = ${user_id}`,
+    (err, result) => {
+      if (err) res.json({ message: "ERROR GET TASKS", status: 500 });
+      res.json({
+        status: 0,
+        message: "Success",
+        data: result,
+      });
+    }
+  );
+};
+
+const findTask = async (id: any, res: Response) => {
+  let items: [] | null = null;
+  let resData: any;
+  await connection.query(
+    `SELECT title AS title, type AS type, status AS status, description AS description, percent AS percent, status AS status FROM tasks where id = ${id}`,
+    async (err, result) => {
+      if (err) res.json({ message: "ERROR FIND TASK", status: 500 });
+      resData = {
+        status: 0,
+        message: "Success",
+        data: { ...result[0], items: items },
+      };
+      if (result[0].type == "Note") {
+        res.json(resData);
+        return;
+      }
+
+      await connection.query(
+        `SELECT description AS text, id AS task_item_id FROM task_items WHERE task_id = ${id}`,
+        (err, result) => {
+          if (err) res.json({ message: "ERROR FIND TASK", status: 500 });
+          resData.data.items = result;
+          res.json(resData);
+          return;
+        }
+      );
+      return;
+    }
+  );
+};
+
 const createTask = async (body: Task, headers: any, res: Response) => {
   let { title, type, description, items } = body;
   let { user_id } = headers;
@@ -23,7 +69,7 @@ const createTask = async (body: Task, headers: any, res: Response) => {
               items !== null
                 ? items.forEach((item) => {
                     connection.query(
-                      `INSERT INTO task_items(task_id, title, description) VALUES("${result[0].id}", "${item.title}", "${item.description}")`,
+                      `INSERT INTO task_items(task_id, description) VALUES("${result[0].id}", "${item.text}")`,
                       (err) => {
                         if (err)
                           res.json({
@@ -37,7 +83,7 @@ const createTask = async (body: Task, headers: any, res: Response) => {
             } catch (e) {}
             //finish items iterations
             res.json({
-              message: "success",
+              message: "Success",
               status: 0,
             });
             return;
@@ -46,7 +92,7 @@ const createTask = async (body: Task, headers: any, res: Response) => {
         return;
       }
       res.json({
-        message: "success",
+        message: "Success",
         status: 0,
       });
       return;
@@ -54,4 +100,40 @@ const createTask = async (body: Task, headers: any, res: Response) => {
   );
 };
 
-export { createTask };
+const deleteTask = async (body: any, res: Response) => {
+  let { id, type } = body;
+  if (type === "Note") {
+    await connection.query(
+      `DELETE FROM tasks WHERE id = ${id}`,
+      (err, result) => {
+        if (err) res.json({ message: "ERROR DELETE TASK", status: 500 });
+        res.json({
+          status: 0,
+          message: "Success",
+        });
+        return;
+      }
+    );
+    return;
+  }
+  //is type List
+  await connection.query(
+    `DELETE FROM task_items WHERE task_id = ${id}`,
+    async (err, result) => {
+      if (err) res.json({ message: "ERROR DELETE TASK", status: 500 });
+      await connection.query(
+        `DELETE FROM tasks WHERE id = ${id}`,
+        (err, result) => {
+          if (err) res.json({ message: "ERROR DELETE TASK", status: 500 });
+          res.json({
+            status: 0,
+            message: "Success",
+          });
+        }
+      );
+    }
+  );
+  return;
+};
+
+export { createTask, getTasks, findTask, deleteTask };

@@ -8,5 +8,5 @@ export interface Task {
 
 export interface TaskItem {
     title:string,
-    description:string
+    text:string
 }

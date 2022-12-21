@@ -26,7 +26,7 @@ const registerUser = (body, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.registerUser = registerUser;
 const loginUser = (headers, res) => __awaiter(void 0, void 0, void 0, function* () {
     let { username, password } = headers;
-    yield mysql_1.connection.query(`SELECT username, password FROM users where username = "${username}" and password = "${password}"`, (err, result) => {
+    yield mysql_1.connection.query(`SELECT id, username, password FROM users where username = "${username}" and password = "${password}"`, (err, result) => {
         if (err)
             res.json({ message: "ERROR LOGIN", error: err, status: 500 });
         if (result.length == 0) {
@@ -35,6 +35,7 @@ const loginUser = (headers, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         res.json({
             token: btoa(`${username}-${new Date().toJSON()}`),
+            user_id: result[0].id,
             status: 0,
         });
     });
