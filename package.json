@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "TODO App",
   "main": "./src/App.ts",
+  "type":"module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
-    "start": "node src/App.ts",
+    "start": "ts-node src/App.ts",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q src/App.ts\""
   },
   "author": "elGerardo",
