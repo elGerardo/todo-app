@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
-    "start": "node --loader ts-node/esm src/App.ts",
+    "start": "node src/App.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q src/App.ts\""
   },
   "author": "elGerardo",
