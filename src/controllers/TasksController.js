@@ -13,7 +13,7 @@ exports.find = exports.get = void 0;
 const Tasks_1 = require("../models/Tasks");
 const get = ({ headers }, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield (0, Tasks_1.getTasks)(headers, res, next);
+        yield (0, Tasks_1.getTasks)(headers, res);
     }
     catch (e) {
         res.status(500);
