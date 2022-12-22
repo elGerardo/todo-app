@@ -9,27 +9,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteTask = exports.findTask = exports.getTasks = exports.createTask = void 0;
+exports.findTask = exports.getTasks = void 0;
 const mysql_1 = require("../config/mysql");
 const getTasks = (headers, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let { user_id } = headers;
-    yield mysql_1.connection.query(`SELECT id as id, title As title, description AS description, type AS type FROM TASKS WHERE user_id = ${user_id}`, (err, result) => {
-        if (err)
-            res.json({ message: "ERROR GET TASKS", status: 500 });
+    try {
+        let { user_id } = headers;
+        let [result] = yield mysql_1.pool.query(`SELECT id as id, title As title, description AS description, type AS type FROM TASKS WHERE user_id = ${user_id}`);
         res.json({
             status: 0,
             message: "Success",
             data: result,
         });
-    });
+    }
+    catch (e) {
+        res.json({ message: "ERROR GET TASKS", status: 500 });
+    }
 });
 exports.getTasks = getTasks;
 const findTask = (id, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let items = null;
-    let resData;
-    yield mysql_1.connection.query(`SELECT title AS title, type AS type, description AS description, percent AS percent, status AS status FROM tasks where id = ${id}`, (err, result) => __awaiter(void 0, void 0, void 0, function* () {
-        if (err)
-            res.json({ message: "ERROR FIND TASK", status: 500 });
+    try {
+        let items = null;
+        let resData;
+        let result;
+        [result] = yield mysql_1.pool.query(`SELECT title AS title, type AS type, status AS status, description AS description, percent AS percent, status AS status FROM tasks where id = ${id}`);
         resData = {
             status: 0,
             message: "Success",
@@ -39,88 +41,13 @@ const findTask = (id, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.json(resData);
             return;
         }
-        yield mysql_1.connection.query(`SELECT description AS text, id AS task_item_id FROM task_items WHERE task_id = ${id}`, (err, result) => {
-            if (err)
-                res.json({ message: "ERROR FIND TASK", status: 500 });
-            resData.data.items = result;
-            res.json(resData);
-            return;
-        });
-        return;
-    }));
-});
-exports.findTask = findTask;
-const createTask = (body, headers, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let { title, type, description, items } = body;
-    let { user_id } = headers;
-    //insert the header task
-    yield mysql_1.connection.query(`INSERT INTO tasks(title, description, type, user_id) values("${title}", "${description}", "${type}", "${user_id}")`, (err, result) => {
-        if (err)
-            res.json({ message: "ERROR CREATE TASK", status: 500 });
-        //has items, then find the task_id recently created
-        if (items !== null) {
-            mysql_1.connection.query(`SELECT * FROM tasks WHERE user_id = ${user_id} order by created_at desc limit 1`, (err, result) => {
-                if (err)
-                    res.json({ message: "ERROR CREATE TASK ITEMS", status: 500 });
-                //revalidation request by ts
-                try {
-                    items !== null
-                        ? items.forEach((item) => {
-                            mysql_1.connection.query(`INSERT INTO task_items(task_id, description) VALUES("${result[0].id}", "${item.text}")`, (err) => {
-                                if (err)
-                                    res.json({
-                                        message: "ERROR CREATE TASK ITEMS",
-                                        status: 500,
-                                    });
-                            });
-                        })
-                        : null;
-                }
-                catch (e) { }
-                //finish items iterations
-                res.json({
-                    message: "Success",
-                    status: 0,
-                });
-                return;
-            });
-            return;
-        }
-        res.json({
-            message: "Success",
-            status: 0,
-        });
-        return;
-    });
-});
-exports.createTask = createTask;
-const deleteTask = (body, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let { id, type } = body;
-    if (type === "Note") {
-        yield mysql_1.connection.query(`DELETE FROM tasks WHERE id = ${id}`, (err, result) => {
-            if (err)
-                res.json({ message: "ERROR DELETE TASK", status: 500 });
-            res.json({
-                status: 0,
-                message: "Success",
-            });
-            return;
-        });
+        [result] = yield mysql_1.pool.query(`SELECT description AS text, id AS task_item_id FROM task_items WHERE task_id = ${id}`);
+        resData.data.items = result;
+        res.json(resData);
         return;
     }
-    //is type List
-    yield mysql_1.connection.query(`DELETE FROM task_items WHERE task_id = ${id}`, (err, result) => __awaiter(void 0, void 0, void 0, function* () {
-        if (err)
-            res.json({ message: "ERROR DELETE TASK", status: 500 });
-        yield mysql_1.connection.query(`DELETE FROM tasks WHERE id = ${id}`, (err, result) => {
-            if (err)
-                res.json({ message: "ERROR DELETE TASK", status: 500 });
-            res.json({
-                status: 0,
-                message: "Success",
-            });
-        });
-    }));
-    return;
+    catch (e) {
+        res.json({ message: "ERROR FIND TASK", status: 500 });
+    }
 });
-exports.deleteTask = deleteTask;
+exports.findTask = findTask;

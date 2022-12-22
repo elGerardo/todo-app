@@ -1,7 +1,8 @@
 import { Response } from "express";
-import { connection } from "../config/mysql";
+//import { pool } from "../config/mysql";
 import { RegisterUser } from "../interfaces/user.interface";
 
+/*
 const registerUser = async (body: RegisterUser, res: Response) => {
   let { username, email, first_name, last_name, password } = body;
   await connection.query(
@@ -35,5 +36,5 @@ const loginUser = async (headers: any, res: Response) => {
     }
   );
 };
-
-export { registerUser, loginUser };
+*/
+export { /*registerUser, loginUser*/ };
