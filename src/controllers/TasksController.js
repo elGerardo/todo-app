@@ -9,15 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.find = exports.get = void 0;
+exports.deleteItem = exports.find = exports.get = exports.create = void 0;
 const Tasks_1 = require("../models/Tasks");
-const get = ({ headers }, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    //try{
-    yield (0, Tasks_1.getTasks)(headers, res);
-    /*}catch(e){
-      res.status(500);
-      res.json("ERROR GET TASKS")
-    }*/
+const get = ({ headers }, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield (0, Tasks_1.getTasks)(headers, res);
+    }
+    catch (e) {
+        res.status(500);
+        res.json("ERROR GET TASKS");
+    }
 });
 exports.get = get;
 const find = ({ query }, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -31,3 +32,23 @@ const find = ({ query }, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.find = find;
+const create = ({ body, headers }, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield (0, Tasks_1.createTask)(body, headers, res);
+    }
+    catch (e) {
+        res.status(500);
+        res.json("ERROR REGISTER USER");
+    }
+});
+exports.create = create;
+const deleteItem = ({ query }, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield (0, Tasks_1.deleteTask)({ id: query.id, type: query.type }, res);
+    }
+    catch (e) {
+        res.status(500);
+        res.json("ERROR DELETE TASK");
+    }
+});
+exports.deleteItem = deleteItem;

@@ -1,24 +1,33 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-/*import { registerUser, loginUser } from "../models/Users";
-
-const register = async ({ body }: Request, res: Response) => {
-  try {
-    await registerUser(body, res);
-  } catch (e) {
-    res.status(500);
-    res.json("ERROR REGISTER USER");
-  }
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
-
-const login = async ({ body, headers }:Request, res: Response) => {
-  try {
-    await loginUser(headers, res);
-  } catch (e) {
-    res.status(500);
-    res.json("ERROR LOGIN USER");
-  }
-}
-
-export { register, login };
-*/ 
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.login = exports.register = void 0;
+const Users_1 = require("../models/Users");
+const register = ({ body }, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield (0, Users_1.registerUser)(body, res);
+    }
+    catch (e) {
+        res.status(500);
+        res.json("ERROR REGISTER USER");
+    }
+});
+exports.register = register;
+const login = ({ headers }, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield (0, Users_1.loginUser)(headers, res);
+    }
+    catch (e) {
+        res.status(500);
+        res.json("ERROR LOGIN USER");
+    }
+});
+exports.login = login;
