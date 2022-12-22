@@ -29,6 +29,8 @@ const loginUser = async (headers: any, res: Response) => {
     let [result]: any = await pool.query(
       `SELECT id, username, password FROM users where username = "${username}" and password = "${password}"`
     );
+    console.log("user id");
+    console.log(result[0].id);
     res.json({
       token: btoa(`${username}-${new Date().toJSON()}`),
       user_id: result[0].id,

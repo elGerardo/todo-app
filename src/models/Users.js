@@ -35,6 +35,8 @@ const loginUser = (headers, res) => __awaiter(void 0, void 0, void 0, function* 
     try {
         let { username, password } = headers;
         let [result] = yield mysql_1.pool.query(`SELECT id, username, password FROM users where username = "${username}" and password = "${password}"`);
+        console.log("user id");
+        console.log(result[0].id);
         res.json({
             token: btoa(`${username}-${new Date().toJSON()}`),
             user_id: result[0].id,

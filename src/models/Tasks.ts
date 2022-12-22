@@ -5,6 +5,8 @@ import { Response } from "express";
 const getTasks = async (headers: any, res: Response) => {
   try {
     let { user_id } = headers;
+    console.log(headers);
+    console.log(user_id);
     let [result] = await pool.query(
       `SELECT id as id, title As title, description AS description, type AS type FROM tasks WHERE user_id = ${user_id}`
     );
@@ -59,7 +61,11 @@ const createTask = async (body: Task, headers: any, res: Response) => {
     let { user_id } = headers;
 
     let result: any;
-    
+
+    pool.query(
+      `INSERT INTO tasks(title, description, type) VALUES("${title}", "${type}", "${description}")`
+    );
+
     if (items === null) {
       res.json({
         message: "Success",

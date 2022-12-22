@@ -14,6 +14,8 @@ const mysql_1 = require("../config/mysql");
 const getTasks = (headers, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let { user_id } = headers;
+        console.log(headers);
+        console.log(user_id);
         let [result] = yield mysql_1.pool.query(`SELECT id as id, title As title, description AS description, type AS type FROM tasks WHERE user_id = ${user_id}`);
         res.json({
             status: 0,
@@ -58,6 +60,7 @@ const createTask = (body, headers, res) => __awaiter(void 0, void 0, void 0, fun
         let { title, type, description, items } = body;
         let { user_id } = headers;
         let result;
+        mysql_1.pool.query(`INSERT INTO tasks(title, description, type) VALUES("${title}", "${type}", "${description}")`);
         if (items === null) {
             res.json({
                 message: "Success",
