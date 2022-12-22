@@ -60,8 +60,10 @@ const createTask = (body, headers, res) => __awaiter(void 0, void 0, void 0, fun
         let { title, type, description, items } = body;
         let { user_id } = headers;
         let result;
-        mysql_1.pool.query(`INSERT INTO tasks(title, description, type, user_id) VALUES("${title}", "${type}", "${description}", ${user_id})`);
-        if (items === null) {
+        result = mysql_1.pool.query(`INSERT INTO tasks(title, description, type, user_id) VALUES("${title}", "${type}", "${description}", ${user_id})`);
+        console.log(items);
+        console.log(type);
+        if (items === null || type == "Note") {
             res.json({
                 message: "Success",
                 status: 0,

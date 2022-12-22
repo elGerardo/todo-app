@@ -62,11 +62,12 @@ const createTask = async (body: Task, headers: any, res: Response) => {
 
     let result: any;
 
-    pool.query(
+    result = pool.query(
       `INSERT INTO tasks(title, description, type, user_id) VALUES("${title}", "${type}", "${description}", ${user_id})`
     );
-
-    if (items === null) {
+      console.log(items);
+      console.log(type);
+    if (items === null || type == "Note") {
       res.json({
         message: "Success",
         status: 0,
