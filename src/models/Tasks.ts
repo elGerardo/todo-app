@@ -1,63 +1,71 @@
-import { connection, Connect } from "../config/mysql";
-import { Task } from "../interfaces/task.interface";
-import { Response, NextFunction } from "express";
+import { pool } from "../config/mysql";
+//import { Task } from "../interfaces/task.interface";
+import { Response } from "express";
 
-const getTasks = async (headers: any, res: Response, next: NextFunction) => {
-  await connection.connect(() => {
+const getTasks = async (headers: any, res: Response) => {
+  try {
     let { user_id } = headers;
-    connection.query(
-      `SELECT id as id, title As title, description AS description, type AS type FROM TASKS WHERE user_id = ${user_id}`,
-      (err, result) => {
-        if (err) res.json({ message: "ERROR GET TASKS", status: 500 });
-        res.json({
-          status: 0,
-          message: "Success",
-          data: result,
-        });
-      }
+    let [result] = await pool.query(
+      `SELECT id as id, title As title, description AS description, type AS type FROM TASKS WHERE user_id = ${user_id}`
     );
-  });
+    res.json({
+      status: 0,
+      message: "Success",
+      data: result,
+    });
+  } catch (e) {
+    res.json({ message: "ERROR GET TASKS", status: 500 });
+  }
 };
 
 const findTask = async (id: any, res: Response) => {
-  let items: [] | null = null;
+  try
+  {let items: [] | null = null;
   let resData: any;
-  await connection.query(
-    `SELECT title AS title, type AS type, status AS status, description AS description, percent AS percent, status AS status FROM tasks where id = ${id}`,
-    async (err, result) => {
-      if (err) res.json({ message: "ERROR FIND TASK", status: 500 });
-      resData = {
-        status: 0,
-        message: "Success",
-        data: { ...result[0], items: items },
-      };
-      if (result.length == 0) {
-        res.json(resData);
-        return;
-      }
 
-      if (result[0].type == "Note") {
-        res.json(resData);
-        return;
-      }
+  let result: any;
 
-      await connection.query(
-        `SELECT description AS text, id AS task_item_id FROM task_items WHERE task_id = ${id}`,
-        (err, result) => {
-          if (err) res.json({ message: "ERROR FIND TASK", status: 500 });
-          resData.data.items = result;
-          res.json(resData);
-          return;
-        }
-      );
-      return;
-    }
+  [result] = await pool.query(
+    `SELECT title AS title, type AS type, status AS status, description AS description, percent AS percent, status AS status FROM tasks where id = ${id}`
   );
+
+  resData = {
+    status: 0,
+    message: "Success",
+    data: { ...result[0], items: items },
+  };
+  if (result[0].type == "Note") {
+    res.json(resData);
+    return;
+  }
+
+  [result] = await pool.query(
+    `SELECT description AS text, id AS task_item_id FROM task_items WHERE task_id = ${id}`
+  );
+
+  resData.data.items = result;
+  res.json(resData);
+  return;}catch(e){
+    res.json({ message: "ERROR FIND TASK", status: 500 });
+  }
 };
 
+/*
 const createTask = async (body: Task, headers: any, res: Response) => {
+  try
+  {
   let { title, type, description, items } = body;
   let { user_id } = headers;
+
+  let result:any;
+  [result] = await pool.query(`INSERT INTO tasks(title, description, type, user_id) values("${title}", "${description}", "${type}", "${user_id}")`);
+
+
+
+}catch(e)
+  {
+
+  }
   //insert the header task
   await connection.query(
     `INSERT INTO tasks(title, description, type, user_id) values("${title}", "${description}", "${type}", "${user_id}")`,
@@ -143,5 +151,6 @@ const deleteTask = async (body: any, res: Response) => {
   );
   return;
 };
+*/
 
-export { createTask, getTasks, findTask, deleteTask };
+export { /*createTask,*/ getTasks, findTask/*, deleteTask*/ };

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { registerUser, loginUser } from "../models/Users";
+/*import { registerUser, loginUser } from "../models/Users";
 
 const register = async ({ body }: Request, res: Response) => {
   try {
@@ -20,3 +20,4 @@ const login = async ({ body, headers }:Request, res: Response) => {
 }
 
 export { register, login };
+*/
