@@ -1,4 +1,4 @@
-const BASE_URL = "https://todo-app-production-9478.up.railway.app/";
+const BASE_URL = "https://todo-app-production-9478.up.railway.app";
 export class Tasks {
   async find(task_id) {
     return await fetch(`${BASE_URL}/tasks/find?id=${task_id}`, {
