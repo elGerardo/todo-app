@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:3001";
+const BASE_URL = "https://todo-app-production-9478.up.railway.app/";
 
 export class Users {
   async login(data) {
