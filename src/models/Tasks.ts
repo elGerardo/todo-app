@@ -4,48 +4,49 @@ import { Response } from "express";
 
 const getTasks = async (headers: any, res: Response) => {
   //try {
-    let { user_id } = headers;
-    let [result] = await pool.query(
-      `SELECT id as id, title As title, description AS description, type AS type FROM TASKS WHERE user_id = ${user_id}`
-    );
-    res.json({
-      status: 0,
-      message: "Success",
-      data: result,
-    });
+  let { user_id } = headers;
+  let [result] = await pool.query(
+    `SELECT id as id, title As title, description AS description, type AS type FROM TASKS WHERE user_id = ${user_id}`
+  );
+  res.json({
+    status: 0,
+    message: "Success",
+    data: result,
+  });
   /*} catch (e) {
     res.json({ message: "ERROR GET TASKS", status: 500 });
   }*/
 };
 
 const findTask = async (id: any, res: Response) => {
-  try
-  {let items: [] | null = null;
-  let resData: any;
+  try {
+    let items: [] | null = null;
+    let resData: any;
 
-  let result: any;
+    let result: any;
 
-  [result] = await pool.query(
-    `SELECT title AS title, type AS type, status AS status, description AS description, percent AS percent, status AS status FROM tasks where id = ${id}`
-  );
+    [result] = await pool.query(
+      `SELECT title AS title, type AS type, status AS status, description AS description, percent AS percent, status AS status FROM tasks where id = ${id}`
+    );
 
-  resData = {
-    status: 0,
-    message: "Success",
-    data: { ...result[0], items: items },
-  };
-  if (result[0].type == "Note") {
+    resData = {
+      status: 0,
+      message: "Success",
+      data: { ...result[0], items: items },
+    };
+    if (result[0].type == "Note") {
+      res.json(resData);
+      return;
+    }
+
+    [result] = await pool.query(
+      `SELECT description AS text, id AS task_item_id FROM task_items WHERE task_id = ${id}`
+    );
+
+    resData.data.items = result;
     res.json(resData);
     return;
-  }
-
-  [result] = await pool.query(
-    `SELECT description AS text, id AS task_item_id FROM task_items WHERE task_id = ${id}`
-  );
-
-  resData.data.items = result;
-  res.json(resData);
-  return;}catch(e){
+  } catch (e) {
     res.json({ message: "ERROR FIND TASK", status: 500 });
   }
 };
@@ -153,4 +154,4 @@ const deleteTask = async (body: any, res: Response) => {
 };
 */
 
-export { /*createTask,*/ getTasks, findTask/*, deleteTask*/ };
+export { /*createTask,*/ getTasks, findTask /*, deleteTask*/ };
