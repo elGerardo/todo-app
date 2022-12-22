@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { /*createTask,*/ getTasks, findTask/*, deleteTask*/ } from "../models/Tasks";
+import { createTask, getTasks, findTask, deleteTask } from "../models/Tasks";
 
 const get = async ({headers}:Request, res:Response) => {
   try{
@@ -21,7 +21,7 @@ const find =async ({query}:Request, res: Response) => {
   }
 }
 
-/*
+
 const create = async ({ body, headers }: Request, res: Response) => {
   try {
     await createTask(body, headers, res);
@@ -40,5 +40,5 @@ const deleteItem = async ({query}:Request, res: Response) => {
     res.json("ERROR DELETE TASK");
   }
 }
-*/
-export { /*create,*/ get, find/*, deleteItem*/ };
+
+export { create, get, find, deleteItem };

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-/*import { registerUser, loginUser } from "../models/Users";
+import { registerUser, loginUser } from "../models/Users";
 
 const register = async ({ body }: Request, res: Response) => {
   try {
@@ -10,7 +10,7 @@ const register = async ({ body }: Request, res: Response) => {
   }
 };
 
-const login = async ({ body, headers }:Request, res: Response) => {
+const login = async ({ headers }:Request, res: Response) => {
   try {
     await loginUser(headers, res);
   } catch (e) {
@@ -20,4 +20,3 @@ const login = async ({ body, headers }:Request, res: Response) => {
 }
 
 export { register, login };
-*/
