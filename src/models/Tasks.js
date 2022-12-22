@@ -12,18 +12,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.findTask = exports.getTasks = void 0;
 const mysql_1 = require("../config/mysql");
 const getTasks = (headers, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        let { user_id } = headers;
-        let [result] = yield mysql_1.pool.query(`SELECT id as id, title As title, description AS description, type AS type FROM TASKS WHERE user_id = ${user_id}`);
-        res.json({
-            status: 0,
-            message: "Success",
-            data: result,
-        });
-    }
-    catch (e) {
-        res.json({ message: "ERROR GET TASKS", status: 500 });
-    }
+    //try {
+    let { user_id } = headers;
+    let [result] = yield mysql_1.pool.query(`SELECT id as id, title As title, description AS description, type AS type FROM TASKS WHERE user_id = ${user_id}`);
+    res.json({
+        status: 0,
+        message: "Success",
+        data: result,
+    });
+    /*} catch (e) {
+      res.json({ message: "ERROR GET TASKS", status: 500 });
+    }*/
 });
 exports.getTasks = getTasks;
 const findTask = (id, res) => __awaiter(void 0, void 0, void 0, function* () {

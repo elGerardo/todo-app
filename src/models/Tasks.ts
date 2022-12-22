@@ -3,7 +3,7 @@ import { pool } from "../config/mysql";
 import { Response } from "express";
 
 const getTasks = async (headers: any, res: Response) => {
-  try {
+  //try {
     let { user_id } = headers;
     let [result] = await pool.query(
       `SELECT id as id, title As title, description AS description, type AS type FROM TASKS WHERE user_id = ${user_id}`
@@ -13,9 +13,9 @@ const getTasks = async (headers: any, res: Response) => {
       message: "Success",
       data: result,
     });
-  } catch (e) {
+  /*} catch (e) {
     res.json({ message: "ERROR GET TASKS", status: 500 });
-  }
+  }*/
 };
 
 const findTask = async (id: any, res: Response) => {
