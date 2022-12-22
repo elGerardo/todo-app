@@ -1,26 +1,24 @@
 import { Request, Response } from "express";
 import { createTask, getTasks, findTask, deleteTask } from "../models/Tasks";
 
-const get = async ({headers}:Request, res:Response) => {
-  try{
+const get = async ({ headers }: Request, res: Response) => {
+  try {
     await getTasks(headers, res);
-  }catch(e){
+  } catch (e) {
     res.status(500);
-    res.json("ERROR GET TASKS")
+    res.json("ERROR GET TASKS");
   }
-}
+};
 
-const find =async ({query}:Request, res: Response) => {
-  try{
-    console.log(query.id);
+const find = async ({ query }: Request, res: Response) => {
+  try {
     let id = query.id;
     await findTask(id, res);
-  }catch(e){
+  } catch (e) {
     res.status(500);
-    res.json("ERROR FIND TASK")
+    res.json("ERROR FIND TASK");
   }
-}
-
+};
 
 const create = async ({ body, headers }: Request, res: Response) => {
   try {
@@ -31,14 +29,13 @@ const create = async ({ body, headers }: Request, res: Response) => {
   }
 };
 
-
-const deleteItem = async ({query}:Request, res: Response) => {
-  try{
-    await deleteTask({id:query.id,type:query.type}, res);
-  }catch(e){
+const deleteItem = async ({ query }: Request, res: Response) => {
+  try {
+    await deleteTask({ id: query.id, type: query.type }, res);
+  } catch (e) {
     res.status(500);
     res.json("ERROR DELETE TASK");
   }
-}
+};
 
 export { create, get, find, deleteItem };

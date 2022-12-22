@@ -23,7 +23,6 @@ const get = ({ headers }, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.get = get;
 const find = ({ query }, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log(query.id);
         let id = query.id;
         yield (0, Tasks_1.findTask)(id, res);
     }

@@ -5,7 +5,7 @@ import { RegisterUser } from "../interfaces/user.interface";
 const registerUser = async (body: RegisterUser, res: Response) => {
   try {
     let { username, email, first_name, last_name, password } = body;
-    let [result]:any = await pool.query(
+    let [result]: any = await pool.query(
       `INSERT INTO users(username, email, first_name, last_name, password) VALUES("${username}", "${email}", "${first_name}", "${last_name}", "${password}")`
     );
     res.json({
@@ -26,7 +26,9 @@ const registerUser = async (body: RegisterUser, res: Response) => {
 const loginUser = async (headers: any, res: Response) => {
   try {
     let { username, password } = headers;
-    let [result]:any = (`SELECT id, username, password FROM users where username = "${username}" and password = "${password}"`);
+    let [result]: any = await pool.query(
+      `SELECT id, username, password FROM users where username = "${username}" and password = "${password}"`
+    );
     res.json({
       token: btoa(`${username}-${new Date().toJSON()}`),
       user_id: result[0].id,

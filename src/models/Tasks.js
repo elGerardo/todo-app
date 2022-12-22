@@ -67,7 +67,7 @@ const createTask = (body, headers, res) => __awaiter(void 0, void 0, void 0, fun
             return;
         }
         items.forEach((item) => {
-            mysql_1.pool.query(`INSERT INTO task_items(task_id, description) VALUES("${result[0].id}", "${item.text}")`);
+            mysql_1.pool.query(`INSERT INTO task_items(task_id, description) VALUES("${result.insertId}", "${item.text}")`);
         });
         res.json({
             message: "Success",

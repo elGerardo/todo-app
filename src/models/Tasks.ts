@@ -73,7 +73,7 @@ const createTask = async (body: Task, headers: any, res: Response) => {
 
     items.forEach((item) => {
       pool.query(
-        `INSERT INTO task_items(task_id, description) VALUES("${result[0].id}", "${item.text}")`
+        `INSERT INTO task_items(task_id, description) VALUES("${result.insertId}", "${item.text}")`
       );
     });
     res.json({
