@@ -1,4 +1,6 @@
-const BASE_URL = "https://todo-app-production-9478.up.railway.app";
+const BASE_URL = "http://todo-app-production-9478.up.railway.app";
+//const BASE_URL = "http://localhost:3001";
+
 export class Tasks {
   async find(task_id) {
     return await fetch(`${BASE_URL}/tasks/find?id=${task_id}`, {
@@ -12,6 +14,7 @@ export class Tasks {
   }
 
   async get(user_id) {
+    console.log(user_id);
     return await fetch(`${BASE_URL}/tasks/get`, {
       method: "GET",
       headers: {
