@@ -14,7 +14,7 @@ const mysql_1 = require("../config/mysql");
 const getTasks = (headers, res) => __awaiter(void 0, void 0, void 0, function* () {
     //try {
     let { user_id } = headers;
-    let [result] = yield mysql_1.pool.query(`SELECT id as id, title As title, description AS description, type AS type FROM TASKS WHERE user_id = ${user_id}`);
+    let [result] = yield mysql_1.pool.query(`SELECT id as id, title As title, description AS description, type AS type FROM tasks WHERE user_id = ${user_id}`);
     res.json({
         status: 0,
         message: "Success",

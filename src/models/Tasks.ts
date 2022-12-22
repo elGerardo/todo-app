@@ -6,7 +6,7 @@ const getTasks = async (headers: any, res: Response) => {
   //try {
   let { user_id } = headers;
   let [result] = await pool.query(
-    `SELECT id as id, title As title, description AS description, type AS type FROM TASKS WHERE user_id = ${user_id}`
+    `SELECT id as id, title As title, description AS description, type AS type FROM tasks WHERE user_id = ${user_id}`
   );
   res.json({
     status: 0,
