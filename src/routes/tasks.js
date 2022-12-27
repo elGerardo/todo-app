@@ -9,3 +9,4 @@ router.get("/get", TasksController_1.get);
 router.get("/find", TasksController_1.find);
 router.post("/create", TasksController_1.create);
 router.delete("/delete", TasksController_1.deleteItem);
+router.post("/updateList", TasksController_1.updateList);

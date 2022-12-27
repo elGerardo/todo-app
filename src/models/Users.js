@@ -13,12 +13,12 @@ exports.loginUser = exports.registerUser = void 0;
 const mysql_1 = require("../config/mysql");
 const registerUser = (body, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let { username, email, first_name, last_name, password } = body;
-        let [result] = yield mysql_1.pool.query(`INSERT INTO users(username, email, first_name, last_name, password) VALUES("${username}", "${email}", "${first_name}", "${last_name}", "${password}")`);
+        let { username, email, password } = body;
+        let [result] = yield mysql_1.pool.query(`INSERT INTO users(username, email, password) VALUES("${username}", "${email}", "${password}")`);
         res.json({
             message: "Success",
             status: 0,
-            user_id: result[0].id,
+            user_id: result.insertId,
             token: btoa(`${username}-${new Date().toJSON()}`),
         });
     }
@@ -35,8 +35,6 @@ const loginUser = (headers, res) => __awaiter(void 0, void 0, void 0, function* 
     try {
         let { username, password } = headers;
         let [result] = yield mysql_1.pool.query(`SELECT id, username, password FROM users where username = "${username}" and password = "${password}"`);
-        console.log("user id");
-        console.log(result[0].id);
         res.json({
             token: btoa(`${username}-${new Date().toJSON()}`),
             user_id: result[0].id,

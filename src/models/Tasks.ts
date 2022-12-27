@@ -5,8 +5,6 @@ import { Response } from "express";
 const getTasks = async (headers: any, res: Response) => {
   try {
     let { user_id } = headers;
-    console.log(headers);
-    console.log(user_id);
     let [result] = await pool.query(
       `SELECT id as id, title As title, description AS description, type AS type FROM tasks WHERE user_id = ${user_id}`
     );
@@ -21,30 +19,41 @@ const getTasks = async (headers: any, res: Response) => {
   }
 };
 
+const find = async (id: any) => {
+  let [result] = await pool.query(
+    `SELECT id AS task_id, title AS title, type AS type, status AS status, description AS description, percent AS percent, status AS status FROM tasks where id = ${id}`
+  );
+
+  return result;
+};
+
+const getListItems = async (id: any) => {
+  let [result] = await pool.query(
+    `SELECT description AS text, id AS task_item_id, status AS status FROM task_items WHERE task_id = ${id}`
+  );
+
+  return result;
+};
+
 const findTask = async (id: any, res: Response) => {
   try {
     let items: [] | null = null;
     let resData: any;
 
-    let result: any;
-
-    [result] = await pool.query(
-      `SELECT title AS title, type AS type, status AS status, description AS description, percent AS percent, status AS status FROM tasks where id = ${id}`
-    );
+    let result: any = await find(id);
 
     resData = {
       status: 0,
       message: "Success",
       data: { ...result[0], items: items },
     };
+
     if (result[0].type == "Note") {
       res.json(resData);
       return;
     }
 
-    [result] = await pool.query(
-      `SELECT description AS text, id AS task_item_id FROM task_items WHERE task_id = ${id}`
-    );
+    result = await getListItems(id);
 
     resData.data.items = result;
     res.json(resData);
@@ -62,11 +71,10 @@ const createTask = async (body: Task, headers: any, res: Response) => {
 
     let result: any;
 
-    result = pool.query(
-      `INSERT INTO tasks(title, description, type, user_id) VALUES("${title}", "${type}", "${description}", ${user_id})`
+    [result] = await pool.query(
+      `INSERT INTO tasks(title, description, type, user_id) VALUES("${title}", "${description}", "${type}", ${user_id})`
     );
-      console.log(items);
-      console.log(type);
+
     if (items === null || type == "Note") {
       res.json({
         message: "Success",
@@ -75,8 +83,8 @@ const createTask = async (body: Task, headers: any, res: Response) => {
       return;
     }
 
-    items.forEach((item) => {
-      pool.query(
+    items.forEach(async (item) => {
+      await pool.query(
         `INSERT INTO task_items(task_id, description) VALUES("${result.insertId}", "${item.text}")`
       );
     });
@@ -120,4 +128,21 @@ const deleteTask = async (body: any, res: Response) => {
   }
 };
 
-export { createTask, getTasks, findTask, deleteTask };
+const updateListItem = async (body: any, res: Response) => {
+  try {
+    let { task_item_id, status } = body;
+    await pool.query(
+      `UPDATE task_items SET status = ${status} WHERE id = ${task_item_id}`
+    );
+    res.json({
+      message: "Success",
+      status: 0,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(500);
+    res.json("ERROR UPDATE LIST ITEM");
+  }
+};
+
+export { createTask, getTasks, findTask, deleteTask, updateListItem };

@@ -9,13 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteTask = exports.findTask = exports.getTasks = exports.createTask = void 0;
+exports.updateListItem = exports.deleteTask = exports.findTask = exports.getTasks = exports.createTask = void 0;
 const mysql_1 = require("../config/mysql");
 const getTasks = (headers, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let { user_id } = headers;
-        console.log(headers);
-        console.log(user_id);
         let [result] = yield mysql_1.pool.query(`SELECT id as id, title As title, description AS description, type AS type FROM tasks WHERE user_id = ${user_id}`);
         res.json({
             status: 0,
@@ -29,12 +27,19 @@ const getTasks = (headers, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.getTasks = getTasks;
+const find = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    let [result] = yield mysql_1.pool.query(`SELECT id AS task_id, title AS title, type AS type, status AS status, description AS description, percent AS percent, status AS status FROM tasks where id = ${id}`);
+    return result;
+});
+const getListItems = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    let [result] = yield mysql_1.pool.query(`SELECT description AS text, id AS task_item_id, status AS status FROM task_items WHERE task_id = ${id}`);
+    return result;
+});
 const findTask = (id, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let items = null;
         let resData;
-        let result;
-        [result] = yield mysql_1.pool.query(`SELECT title AS title, type AS type, status AS status, description AS description, percent AS percent, status AS status FROM tasks where id = ${id}`);
+        let result = yield find(id);
         resData = {
             status: 0,
             message: "Success",
@@ -44,7 +49,7 @@ const findTask = (id, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.json(resData);
             return;
         }
-        [result] = yield mysql_1.pool.query(`SELECT description AS text, id AS task_item_id FROM task_items WHERE task_id = ${id}`);
+        result = yield getListItems(id);
         resData.data.items = result;
         res.json(resData);
         return;
@@ -60,9 +65,7 @@ const createTask = (body, headers, res) => __awaiter(void 0, void 0, void 0, fun
         let { title, type, description, items } = body;
         let { user_id } = headers;
         let result;
-        result = mysql_1.pool.query(`INSERT INTO tasks(title, description, type, user_id) VALUES("${title}", "${type}", "${description}", ${user_id})`);
-        console.log(items);
-        console.log(type);
+        [result] = yield mysql_1.pool.query(`INSERT INTO tasks(title, description, type, user_id) VALUES("${title}", "${description}", "${type}", ${user_id})`);
         if (items === null || type == "Note") {
             res.json({
                 message: "Success",
@@ -70,9 +73,9 @@ const createTask = (body, headers, res) => __awaiter(void 0, void 0, void 0, fun
             });
             return;
         }
-        items.forEach((item) => {
-            mysql_1.pool.query(`INSERT INTO task_items(task_id, description) VALUES("${result.insertId}", "${item.text}")`);
-        });
+        items.forEach((item) => __awaiter(void 0, void 0, void 0, function* () {
+            yield mysql_1.pool.query(`INSERT INTO task_items(task_id, description) VALUES("${result.insertId}", "${item.text}")`);
+        }));
         res.json({
             message: "Success",
             status: 0,
@@ -113,3 +116,19 @@ const deleteTask = (body, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.deleteTask = deleteTask;
+const updateListItem = (body, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let { task_item_id, status } = body;
+        yield mysql_1.pool.query(`UPDATE task_items SET status = ${status} WHERE id = ${task_item_id}`);
+        res.json({
+            message: "Success",
+            status: 0,
+        });
+    }
+    catch (e) {
+        console.log(e);
+        res.status(500);
+        res.json("ERROR UPDATE LIST ITEM");
+    }
+});
+exports.updateListItem = updateListItem;

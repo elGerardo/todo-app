@@ -1,5 +1,11 @@
 import { Request, Response } from "express";
-import { createTask, getTasks, findTask, deleteTask } from "../models/Tasks";
+import {
+  createTask,
+  getTasks,
+  findTask,
+  deleteTask,
+  updateListItem,
+} from "../models/Tasks";
 
 const get = async ({ headers }: Request, res: Response) => {
   try {
@@ -38,4 +44,19 @@ const deleteItem = async ({ query }: Request, res: Response) => {
   }
 };
 
-export { create, get, find, deleteItem };
+const updateList = async ({ query }: Request, res: Response) => {
+  try {
+    let task_item_id = query.task_item_id;
+    let status = query.status;
+    await updateListItem(
+      { task_item_id: task_item_id, status: status },
+      res
+    );
+  } catch (e) {
+    console.log(e);
+    res.status(500);
+    res.json("ERROR UPDATE LIST ITEM");
+  }
+};
+
+export { create, get, find, deleteItem, updateList };

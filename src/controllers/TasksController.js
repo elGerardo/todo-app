@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteItem = exports.find = exports.get = exports.create = void 0;
+exports.updateList = exports.deleteItem = exports.find = exports.get = exports.create = void 0;
 const Tasks_1 = require("../models/Tasks");
 const get = ({ headers }, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -52,3 +52,16 @@ const deleteItem = ({ query }, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.deleteItem = deleteItem;
+const updateList = ({ query }, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let task_item_id = query.task_item_id;
+        let status = query.status;
+        yield (0, Tasks_1.updateListItem)({ task_item_id: task_item_id, status: status }, res);
+    }
+    catch (e) {
+        console.log(e);
+        res.status(500);
+        res.json("ERROR UPDATE LIST ITEM");
+    }
+});
+exports.updateList = updateList;
