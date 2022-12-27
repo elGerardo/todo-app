@@ -13,6 +13,7 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { Tasks } from "../../services/Tasks";
+import { Link } from "react-router-dom";
 
 //customStates
 let useField = ({ type, required, as, placeholder }) => {
@@ -260,7 +261,9 @@ let CustomModal = (props) => {
 
 let Detail = (props) => {
   let [isLoading, setIsLoading] = useState(true);
+  let [isLoadingItem, setIsLoadingItem] = useState(false);
   let [item, setItem] = useState({});
+  let [listItems, setListItems] = useState([]);
 
   let findTask = async () => {
     let loginData = localStorage.getItem("login");
@@ -268,6 +271,7 @@ let Detail = (props) => {
       await new Tasks().find(props.selectedData.id).then((response) => {
         if (response.status == 0) {
           setItem(response.data);
+          if (response.data.type == "LIST") setListItems(response.data.items);
           setIsLoading(false);
           return;
         }
@@ -281,14 +285,17 @@ let Detail = (props) => {
     return;
   };
 
-  let updateItem = async (id) => {
-    await Tasks().updateItem(id).then(response => {
-      if(response.status === 0)
-      {
-        
+  let updateItem = async (id, value, index) => {
+    setIsLoadingItem(true);
+    await new Tasks().updateListItem(id, value).then((response) => {
+      if (response.status === 0) {
+        let data = listItems;
+        data[index].status = value;
+        setListItems(data);
+        setIsLoadingItem(false);
       }
     });
-  }
+  };
 
   useEffect(() => {
     if (props.selectedData.id !== null) {
@@ -308,10 +315,11 @@ let Detail = (props) => {
         }}
         id="frontground"
       ></div>
+
       <AnimatePresence>
         {props.selectedData.id && (
           <motion.div
-            className={`w-50 p-5 rounded shadow-lg ${style.motion_div}`}
+            className={`p-5 rounded shadow-lg ${style.motion_div}`}
             layoutId={props.selectedData.id}
           >
             {!isLoading ? (
@@ -319,21 +327,26 @@ let Detail = (props) => {
                 <h1>{item.title}</h1>
                 <p>{item.description}</p>
                 {item.items !== null &&
-                  item.items.map((item, index) => {
+                  listItems.map((i, index) => {
                     return (
                       <Form.Group
                         key={
-                          item.task_item_id !== undefined
-                            ? item.task_item_id
-                            : item.text + "-" + index
+                          i.task_item_id !== undefined
+                            ? i.task_item_id
+                            : i.text + "-" + index
                         }
                       >
                         <Form.Check
-                          label={item.text}
+                          disabled={isLoadingItem}
+                          label={i.text}
+                          checked={i.status}
                           id={
-                            item.task_item_id !== undefined
-                              ? item.task_item_id
-                              : item.text + "-" + index
+                            i.task_item_id !== undefined
+                              ? i.task_item_id
+                              : i.text + "-" + index
+                          }
+                          onChange={(e) =>
+                            updateItem(e.target.id, e.target.checked, index)
                           }
                         />
                       </Form.Group>
@@ -430,24 +443,32 @@ let Dashboard = () => {
         }}
         exit={{ opacity: 0, x: 0 }}
       >
-        <div
-          className={`${style.control_header} w-100 position-fixed end-0 d-flex flex-row-reverse py-3`}
-        >
-          {
-            <button
-              onClick={() => setIsContentGrid(!isContentGrid)}
-              className={`${buttons.primary}`}
-            >
-              <FontAwesomeIcon icon={isContentGrid ? faTableCells : faBars} />{" "}
-              Order
-            </button>
-          }
-          <button
-            className={`${buttons.primary} mx-3`}
-            onClick={() => setModalShow(true)}
-          >
-            <FontAwesomeIcon icon={faPlus} /> Add
-          </button>
+        <div className={`${style.control_header} w-100 position-fixed p-3`}>
+          <Container className={`d-flex justify-content-between`}>
+            <div>
+              {!localStorage.getItem("login") && (
+                <a href="/" className={`${buttons.primary} py-1`}>
+                  Login
+                </a>
+              )}
+            </div>
+            <div>
+              <button
+                className={`${buttons.primary} mx-3`}
+                onClick={() => setModalShow(true)}
+              >
+                <FontAwesomeIcon icon={faPlus} />{" "}
+                <span className={``}>Add</span>
+              </button>
+              <button
+                onClick={() => setIsContentGrid(!isContentGrid)}
+                className={`${buttons.primary}`}
+              >
+                <FontAwesomeIcon icon={isContentGrid ? faTableCells : faBars} />
+                <span className={`px-1`}>Order</span>
+              </button>
+            </div>
+          </Container>
         </div>
       </motion.div>
       {/*content*/}
@@ -471,7 +492,7 @@ let Dashboard = () => {
           {tasks !== null ? (
             <div
               className={`${style.item_container}`}
-              style={isContentGrid ? { columns: "3" } : null}
+              style={isContentGrid ? { columns: "2" } : null}
             >
               {!isLoading ? (
                 tasks.map((task, index) => {

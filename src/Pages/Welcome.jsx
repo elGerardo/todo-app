@@ -3,7 +3,7 @@ import buttons from "../assets/global/buttons.module.css";
 import { Container, Form, Spinner } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Users } from "../services/Users";
 
 //custom states
@@ -108,12 +108,11 @@ let Login = () => {
 };
 
 let SignUp = () => {
-  let firstName = useField({ type: "text", required: true });
-  let lastName = useField({ type: "text", required: true });
   let userName = useField({ type: "text", required: true });
   let email = useField({ type: "email", required: true });
   let password = useField({ type: "password", required: true });
   let confirmPassword = useField({ type: "password", required: true });
+  let navigate = useNavigate();
 
   //0 filling fields, 1 is saving data, 2 success
   let [isLoading, setIsLoading] = useState(0);
@@ -121,8 +120,6 @@ let SignUp = () => {
 
   let handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(password);
-    console.log(confirmPassword);
     if (password.value !== confirmPassword.value) {
       setPasswordMessage("Passwords are not same");
       return;
@@ -130,9 +127,7 @@ let SignUp = () => {
     setPasswordMessage("");
     setIsLoading(1);
     let postData = {
-      username: userName,
-      first_name: firstName.value,
-      last_name: lastName.value,
+      username: userName.value,
       email: email.value,
       password: password.value,
       confirmPassword: confirmPassword.value,
@@ -140,9 +135,12 @@ let SignUp = () => {
 
     await new Users().register(postData).then((response) => {
       if (response.status == 0) {
-        console.log(response);
-        localStorage.setItem("token", JSON.stringify(response.token));
+        localStorage.setItem(
+          "login",
+          JSON.stringify({ token: response.token, user_id: response.user_id })
+        );
         setIsLoading(2);
+        navigate("/dashboard");
         return;
       }
     });
@@ -167,22 +165,6 @@ let SignUp = () => {
       >
         <div>
           <Form onSubmit={handleSubmit} style={{ textAlign: "left" }}>
-            <div>
-              <Form.Group className={`my-3 mt-5`}>
-                <Form.Label>First Name</Form.Label>
-                <Form.Control
-                  {...firstName}
-                  disabled={isLoading !== 2 ? false : true}
-                />
-              </Form.Group>
-              <Form.Group className={`my-3`}>
-                <Form.Label>Last Name</Form.Label>
-                <Form.Control
-                  {...lastName}
-                  disabled={isLoading !== 2 ? false : true}
-                />
-              </Form.Group>
-            </div>
             <Form.Group className={`my-3`}>
               <Form.Label>User Name</Form.Label>
               <Form.Control
@@ -237,6 +219,10 @@ let SignUp = () => {
 //page
 let Welcome = () => {
   let [isLogin, setIsLogin] = useState(true);
+
+  useEffect(() => {
+    localStorage.removeItem("login");
+  }, [])
 
   let content = (
     <div

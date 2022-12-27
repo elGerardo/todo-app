@@ -1,59 +1,48 @@
-/*body
-{
-    overflow-y: scroll;
-}*/
-
-.control_header
-{
+.control_header {
     z-index: 2;
     backdrop-filter: blur(5rem);
 }
 
-.control_header button
-{
+.control_header > div{
+    width: 75%;
+}
+
+.control_header button {
     padding: 0.25rem 1rem;
 }
 
-.control_header:nth-child(1)
-{
+.control_header:nth-child(1) {
     margin: 0rem 11rem 0rem 0;
 }
 
-.container .non_item_container
-{
+.container .non_item_container {
     margin-top: 10rem;
 }
 
-.container .item_container
-{
+.container .item_container {
     margin-top: 5rem;
     padding: 2rem;
     width: 75%;
 }
 
-
-.container .item
-{
+.container .item {
     height: fit-content;
     margin-bottom: 1.5rem;
     padding: 1.5rem;
     background: #ffffff;
-    break-inside:avoid;
+    break-inside: avoid;
     transition: none;
 }
 
-.container .item p
-{
+.container .item p {
     width: fit-content;
 }
 
-.container .item img
-{
+.container .item img {
     width: 100%;
 }
 
-.control
-{
+.control {
     background-color: #eeeeee;
     font-size: 1.8rem;
     outline: none;
@@ -62,9 +51,7 @@
     box-shadow: none;
 }
 
-
-.frontground
-{
+.frontground {
     display: none;
     position: fixed;
     top: 0;
@@ -78,9 +65,9 @@
     transition: all 0.3s ease-in-out;
 }
 
-.motion_div
-{
+.motion_div {
     z-index: 5;
+    width: 50%;
     position: absolute;
     top: 0;
     bottom: 0;
@@ -89,4 +76,22 @@
     margin: 5rem auto;
     overflow-y: scroll;
     background-color: rgba(255, 255, 255, 0.9);
+}
+
+@media only screen and (max-width: 880px) {
+    .motion_div {
+        width: 75%;
+    }
+}
+
+@media only screen and (max-width: 770px) {
+    .container .item_container {
+        width: 100%;
+    }
+}
+
+@media only screen and (max-width: 680px) {
+    .control_header > div {
+        width: 100%;
+    }
 }

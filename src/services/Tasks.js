@@ -1,5 +1,5 @@
-const BASE_URL = "http://todo-app-production-9478.up.railway.app";
-//const BASE_URL = "http://localhost:3001";
+//const BASE_URL = "http://todo-app-production-9478.up.railway.app";
+const BASE_URL = "http://localhost:3001";
 
 export class Tasks {
   async find(task_id) {
@@ -14,7 +14,6 @@ export class Tasks {
   }
 
   async get(user_id) {
-    console.log(user_id);
     return await fetch(`${BASE_URL}/tasks/get`, {
       method: "GET",
       headers: {
@@ -39,23 +38,20 @@ export class Tasks {
       .catch((error) => console.log(error));
   }
 
-  async deleteItem({id, type}) {
-    return await fetch(
-      `${BASE_URL}/tasks/delete?id=${id}&type=${type}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
+  async deleteItem({ id, type }) {
+    return await fetch(`${BASE_URL}/tasks/delete?id=${id}&type=${type}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
       .then((response) => response.json())
       .catch((error) => console.log(error));
   }
 
-  async updateItem(id){
+  async updateListItem(task_item_id, value) {
     return await fetch(
-      `${BASE_URL}/tasks/updateItem?id=${id}`,
+      `${BASE_URL}/tasks/updateList?task_item_id=${task_item_id}&status=${value}`,
       {
         method: "POST",
         headers: {
@@ -63,5 +59,7 @@ export class Tasks {
         },
       }
     )
+      .then((response) => response.json())
+      .catch((error) => console.log(error));
   }
 }
