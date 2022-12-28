@@ -48,10 +48,7 @@ const updateList = async ({ query }: Request, res: Response) => {
   try {
     let task_item_id = query.task_item_id;
     let status = query.status;
-    await updateListItem(
-      { task_item_id: task_item_id, status: status },
-      res
-    );
+    await updateListItem({ task_item_id: task_item_id, status: status }, res);
   } catch (e) {
     console.log(e);
     res.status(500);

@@ -7,6 +7,6 @@ export interface Task {
 }
 
 export interface TaskItem {
-    title:string,
-    text:string
+  title: string;
+  text: string;
 }

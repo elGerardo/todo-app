@@ -35,17 +35,25 @@ const loginUser = (headers, res) => __awaiter(void 0, void 0, void 0, function* 
     try {
         let { username, password } = headers;
         let [result] = yield mysql_1.pool.query(`SELECT id, username, password FROM users where username = "${username}" and password = "${password}"`);
+        if (result.length !== 0) {
+            res.json({
+                token: btoa(`${username}-${new Date().toJSON()}`),
+                user_id: result[0].id,
+                status: 0,
+            });
+            return;
+        }
         res.json({
-            token: btoa(`${username}-${new Date().toJSON()}`),
-            user_id: result[0].id,
-            status: 0,
+            status: 400,
+            message: "Username or Password Incorrect",
         });
+        return;
     }
     catch (e) {
         console.log(e);
         res.json({
-            status: 500,
-            message: "ERROR LOGIN USER",
+            status: 400,
+            message: "Username or Password Incorrect",
         });
     }
 });

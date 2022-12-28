@@ -10,13 +10,13 @@ const register = async ({ body }: Request, res: Response) => {
   }
 };
 
-const login = async ({ headers }:Request, res: Response) => {
+const login = async ({ headers }: Request, res: Response) => {
   try {
     await loginUser(headers, res);
   } catch (e) {
     res.status(500);
     res.json("ERROR LOGIN USER");
-  } 
-}
+  }
+};
 
 export { register, login };
