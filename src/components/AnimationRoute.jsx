@@ -3,6 +3,7 @@ import { AnimatePresence } from "framer-motion";
 
 import Welcome from "../Pages/Welcome.jsx";
 import Dashboard from "../Pages/dashboard/Dashboard.jsx";
+import ProtectedRoute from "./ProtectedRoute.jsx";
 
 let AnimationRoute = () => {
   let location = useLocation();
@@ -11,7 +12,11 @@ let AnimationRoute = () => {
     <AnimatePresence>
       <Routes location={location} key={location.pathname}>
         <Route index element={<Welcome />} />
-        <Route path="dashboard" element={<Dashboard />}/>
+        <Route path="dashboard" element={
+        <ProtectedRoute>
+          <Dashboard />
+        </ProtectedRoute>
+        } />
       </Routes>
     </AnimatePresence>
   );

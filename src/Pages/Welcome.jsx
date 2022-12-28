@@ -161,7 +161,7 @@ let SignUp = () => {
       exit={{ opacity: 0, x: -25 }}
     >
       <div
-        className={`d-flex align-items-center justify-content-center w-100 bh-white`}
+        className={`d-flex align-items-center justify-content-center w-100 bh-white my-5`}
       >
         <div>
           <Form onSubmit={handleSubmit} style={{ textAlign: "left" }}>
@@ -266,16 +266,6 @@ let Welcome = () => {
             </button>
           </div>
           {isLogin ? <Login /> : <SignUp />}
-
-          <hr />
-          <div className={`w-100 d-flex justify-content-center`}>
-            <Link
-              to="dashboard"
-              className={`${buttons.secondary} d-block w-50`}
-            >
-              Get In as Guess
-            </Link>
-          </div>
         </div>
       </motion.div>
     </div>

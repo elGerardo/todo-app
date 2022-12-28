@@ -16,7 +16,11 @@
 }
 
 .container .non_item_container {
-    margin-top: 10rem;
+    margin-top: 15rem;
+}
+
+.container .non_item_container img{
+    width: 50%;
 }
 
 .container .item_container {
@@ -75,7 +79,7 @@
     right: 0;
     margin: 5rem auto;
     overflow-y: scroll;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 1);
 }
 
 @media only screen and (max-width: 880px) {

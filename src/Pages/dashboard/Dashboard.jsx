@@ -11,9 +11,9 @@ import {
   faList,
   faBars,
   faTrash,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { Tasks } from "../../services/Tasks";
-import { Link } from "react-router-dom";
 
 //customStates
 let useField = ({ type, required, as, placeholder }) => {
@@ -271,7 +271,7 @@ let Detail = (props) => {
       await new Tasks().find(props.selectedData.id).then((response) => {
         if (response.status == 0) {
           setItem(response.data);
-          if (response.data.type == "LIST") setListItems(response.data.items);
+          if (response.data.type == "List") setListItems(response.data.items);
           setIsLoading(false);
           return;
         }
@@ -322,6 +322,16 @@ let Detail = (props) => {
             className={`p-5 rounded shadow-lg ${style.motion_div}`}
             layoutId={props.selectedData.id}
           >
+            <span
+              className={`position-absolute end-0 m-5 top-0`}
+              style={{cursor:"pointer",fontSize:"2.4rem"}}
+              onClick={() => {
+                props.emitselecteddata({ id: null });
+                document.getElementById("frontground").style.display = "none";
+              }}
+            >
+              <FontAwesomeIcon icon={faXmark} />
+            </span>
             {!isLoading ? (
               <div>
                 <h1>{item.title}</h1>
@@ -444,13 +454,11 @@ let Dashboard = () => {
         exit={{ opacity: 0, x: 0 }}
       >
         <div className={`${style.control_header} w-100 position-fixed p-3`}>
-          <Container className={`d-flex justify-content-between`}>
+          <Container
+            className={`d-flex justify-content-between`}
+          >
             <div>
-              {!localStorage.getItem("login") && (
-                <a href="/" className={`${buttons.primary} py-1`}>
-                  Login
-                </a>
-              )}
+              <a className={`${buttons.primary} py-1`} href="/">Logout</a>
             </div>
             <div>
               <button
@@ -524,7 +532,10 @@ let Dashboard = () => {
                         }}
                       >
                         <h1>{task.title}</h1>
-                        <p>{task.description.substr(0, 126)} ...</p>
+                        <p>
+                          {task.description.substr(0, 126)}{" "}
+                          {task.description.length > 126 && "..."}
+                        </p>
                       </div>
                       <FontAwesomeIcon
                         icon={faTrash}
@@ -541,11 +552,9 @@ let Dashboard = () => {
               )}
             </div>
           ) : (
-            <div className={`${style.non_item_container}`}>
-              <h2>
-                It's look like you don't have Notes yet, press the{" "}
-                <FontAwesomeIcon icon={faPlus} /> Add button to create Note
-              </h2>
+            <div className={`${style.non_item_container} text-center`}>
+              <img src="./empty_state.png"/>
+              <h2 className={`my-5`}>Add a Note clicking the button + Add</h2>
             </div>
           )}
         </Container>
