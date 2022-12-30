@@ -3,6 +3,7 @@
     width: 100%;
     position: relative;
     backdrop-filter: blur(5rem);
+    -webkit-backdrop-filter: blur(5rem);
     z-index: 3;
 }
 
