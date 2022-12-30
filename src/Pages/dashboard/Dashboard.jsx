@@ -1,6 +1,6 @@
 import style from "./Dashboard.module.css";
 import { AnimatePresence, motion } from "framer-motion";
-import { Container, Modal, Form, Spinner } from "react-bootstrap";
+import { Container, Modal, Form, Spinner, ProgressBar } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import buttons from "../../assets/global/buttons.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,6 +12,8 @@ import {
   faBars,
   faTrash,
   faXmark,
+  faCircle,
+  faCircleCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { Tasks } from "../../services/Tasks";
 
@@ -324,7 +326,7 @@ let Detail = (props) => {
           >
             <span
               className={`position-absolute end-0 m-5 top-0`}
-              style={{cursor:"pointer",fontSize:"2.4rem"}}
+              style={{ cursor: "pointer", fontSize: "2.4rem" }}
               onClick={() => {
                 props.emitselecteddata({ id: null });
                 document.getElementById("frontground").style.display = "none";
@@ -332,10 +334,12 @@ let Detail = (props) => {
             >
               <FontAwesomeIcon icon={faXmark} />
             </span>
+
             {!isLoading ? (
-              <div>
+              <div className={``}>
                 <h1>{item.title}</h1>
                 <p>{item.description}</p>
+
                 {item.items !== null &&
                   listItems.map((i, index) => {
                     return (
@@ -362,6 +366,53 @@ let Detail = (props) => {
                       </Form.Group>
                     );
                   })}
+                {item.type == "List" && (
+                  <div className={`d-flex align-items-center`}>
+                    {(parseInt(
+                      listItems.filter((item) => item.status == 1).length
+                    ) /
+                      parseInt(listItems.length)) *
+                      100 !==
+                    100 ? (
+                      <FontAwesomeIcon
+                        className={`text-light display-4`}
+                        icon={faCircle}
+                      />
+                    ) : (
+                      <motion.div
+                        key="finished"
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{
+                          duration: 0.5,
+                          ease: [0, 0.71, 0.2, 1.01],
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          className={`text-success display-4`}
+                          icon={faCircleCheck}
+                        />
+                      </motion.div>
+                    )}
+                    <ProgressBar
+                      className={`m-5 w-100`}
+                      now={
+                        (parseInt(
+                          listItems.filter((item) => item.status == 1).length
+                        ) /
+                          parseInt(listItems.length)) *
+                        100
+                      }
+                      label={`${(
+                        (parseInt(
+                          listItems.filter((item) => item.status == 1).length
+                        ) /
+                          parseInt(listItems.length)) *
+                        100
+                      ).toFixed(0)}%`}
+                    />
+                  </div>
+                )}
               </div>
             ) : (
               <Spinner></Spinner>
@@ -454,11 +505,11 @@ let Dashboard = () => {
         exit={{ opacity: 0, x: 0 }}
       >
         <div className={`${style.control_header} w-100 position-fixed p-3`}>
-          <Container
-            className={`d-flex justify-content-between`}
-          >
+          <Container className={`d-flex justify-content-between`}>
             <div>
-              <a className={`${buttons.primary} py-1`} href="/">Logout</a>
+              <a className={`${buttons.primary} py-1`} href="/">
+                Logout
+              </a>
             </div>
             <div>
               <button
@@ -553,7 +604,7 @@ let Dashboard = () => {
             </div>
           ) : (
             <div className={`${style.non_item_container} text-center`}>
-              <img src="./empty_state.png"/>
+              <img src="./empty_state.png" />
               <h2 className={`my-5`}>Add a Note clicking the button + Add</h2>
             </div>
           )}

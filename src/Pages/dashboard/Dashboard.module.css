@@ -65,6 +65,23 @@
     height: 100vh;
     background-color: none;
     backdrop-filter: blur(1rem);
+    -webkit-backdrop-filter: blur(1rem);
+    z-index: 4;
+    transition: all 0.3s ease-in-out;
+}
+
+.frontground::before {
+    content: '';
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 100vh;
+    background-color: none;
+    backdrop-filter: blur(1rem);
+    -webkit-backdrop-filter: blur(1rem);
     z-index: 4;
     transition: all 0.3s ease-in-out;
 }
