@@ -5,7 +5,10 @@ const token = JSON.parse(localStorage.getItem("login"));
 
 export class Tasks {
   async get() {
-    console.log(token);
+    if(token === null)
+    {
+      window.location.reload();
+    }
     return await fetch(`${BASE_URL}/tasks/get`, {
       method: "GET",
       headers: {
