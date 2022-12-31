@@ -11,9 +11,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateListItem = exports.deleteTask = exports.findTask = exports.getTasks = exports.createTask = void 0;
 const mysql_1 = require("../config/mysql");
-const getTasks = (headers, res) => __awaiter(void 0, void 0, void 0, function* () {
+const find = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    let [result] = yield mysql_1.pool.query(`SELECT id AS task_id, title AS title, type AS type, status AS status, description AS description, percent AS percent, status AS status FROM tasks where id = ${id}`);
+    return result;
+});
+const getListItems = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    let [result] = yield mysql_1.pool.query(`SELECT description AS text, id AS task_item_id, status AS status FROM task_items WHERE task_id = ${id}`);
+    return result;
+});
+const getTasks = (tokenData, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let { user_id } = headers;
+        let { user_id } = tokenData;
         let [result] = yield mysql_1.pool.query(`SELECT id as id, title As title, description AS description, type AS type FROM tasks WHERE user_id = ${user_id}`);
         res.json({
             status: 0,
@@ -27,14 +35,6 @@ const getTasks = (headers, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.getTasks = getTasks;
-const find = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    let [result] = yield mysql_1.pool.query(`SELECT id AS task_id, title AS title, type AS type, status AS status, description AS description, percent AS percent, status AS status FROM tasks where id = ${id}`);
-    return result;
-});
-const getListItems = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    let [result] = yield mysql_1.pool.query(`SELECT description AS text, id AS task_item_id, status AS status FROM task_items WHERE task_id = ${id}`);
-    return result;
-});
 const findTask = (id, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let items = null;
@@ -60,10 +60,10 @@ const findTask = (id, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.findTask = findTask;
-const createTask = (body, headers, res) => __awaiter(void 0, void 0, void 0, function* () {
+const createTask = (body, tokenData, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let { title, type, description, items } = body;
-        let { user_id } = headers;
+        let { user_id } = tokenData;
         let result;
         [result] = yield mysql_1.pool.query(`INSERT INTO tasks(title, description, type, user_id) VALUES("${title}", "${description}", "${type}", ${user_id})`);
         if (items === null || type == "Note") {

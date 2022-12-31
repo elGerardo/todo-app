@@ -2,23 +2,6 @@ import { pool } from "../config/mysql";
 import { Task } from "../interfaces/task.interface";
 import { Response } from "express";
 
-const getTasks = async (headers: any, res: Response) => {
-  try {
-    let { user_id } = headers;
-    let [result] = await pool.query(
-      `SELECT id as id, title As title, description AS description, type AS type FROM tasks WHERE user_id = ${user_id}`
-    );
-    res.json({
-      status: 0,
-      message: "Success",
-      data: result,
-    });
-  } catch (e) {
-    console.log(e);
-    res.json({ message: "ERROR GET TASKS", status: 500 });
-  }
-};
-
 const find = async (id: any) => {
   let [result] = await pool.query(
     `SELECT id AS task_id, title AS title, type AS type, status AS status, description AS description, percent AS percent, status AS status FROM tasks where id = ${id}`
@@ -33,6 +16,23 @@ const getListItems = async (id: any) => {
   );
 
   return result;
+};
+
+const getTasks = async (tokenData: any, res: Response) => {
+  try {
+    let { user_id } = tokenData;
+    let [result] = await pool.query(
+      `SELECT id as id, title As title, description AS description, type AS type FROM tasks WHERE user_id = ${user_id}`
+    );
+    res.json({
+      status: 0,
+      message: "Success",
+      data: result,
+    });
+  } catch (e) {
+    console.log(e);
+    res.json({ message: "ERROR GET TASKS", status: 500 });
+  }
 };
 
 const findTask = async (id: any, res: Response) => {
@@ -64,10 +64,10 @@ const findTask = async (id: any, res: Response) => {
   }
 };
 
-const createTask = async (body: Task, headers: any, res: Response) => {
+const createTask = async (body: Task, tokenData: any, res: Response) => {
   try {
     let { title, type, description, items } = body;
-    let { user_id } = headers;
+    let { user_id } = tokenData;
 
     let result: any;
 

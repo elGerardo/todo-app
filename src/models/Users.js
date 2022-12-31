@@ -15,11 +15,17 @@ const registerUser = (body, res) => __awaiter(void 0, void 0, void 0, function* 
     try {
         let { username, email, password } = body;
         let [result] = yield mysql_1.pool.query(`INSERT INTO users(username, email, password) VALUES("${username}", "${email}", "${password}")`);
+        let content = {
+            username: `${username}`,
+            user_id: `${result.insertId}`,
+            login_datetime: `${new Date().toJSON()}`,
+            type: "user",
+            access: ["create", "read", "update", "delete"],
+        };
         res.json({
             message: "Success",
             status: 0,
-            user_id: result.insertId,
-            token: btoa(`${username}-${new Date().toJSON()}`),
+            token: btoa(JSON.stringify(content)),
         });
     }
     catch (e) {
@@ -36,9 +42,15 @@ const loginUser = (headers, res) => __awaiter(void 0, void 0, void 0, function* 
         let { username, password } = headers;
         let [result] = yield mysql_1.pool.query(`SELECT id, username, password FROM users where username = "${username}" and password = "${password}"`);
         if (result.length !== 0) {
+            let content = {
+                username: `${username}`,
+                user_id: `${result[0].id}`,
+                login_datetime: `${new Date().toJSON()}`,
+                type: "user",
+                access: ["create", "read", "update", "delete"],
+            };
             res.json({
-                token: btoa(`${username}-${new Date().toJSON()}`),
-                user_id: result[0].id,
+                token: btoa(JSON.stringify(content)),
                 status: 0,
             });
             return;

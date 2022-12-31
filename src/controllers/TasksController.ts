@@ -9,7 +9,9 @@ import {
 
 const get = async ({ headers }: Request, res: Response) => {
   try {
-    await getTasks(headers, res);
+    const token: any = headers.token;
+    const tokenData: any = JSON.parse(atob(token));
+    await getTasks(tokenData, res);
   } catch (e) {
     res.status(500);
     res.json("ERROR GET TASKS");
@@ -28,7 +30,9 @@ const find = async ({ query }: Request, res: Response) => {
 
 const create = async ({ body, headers }: Request, res: Response) => {
   try {
-    await createTask(body, headers, res);
+    const token: any = headers.token;
+    const tokenData: any = JSON.parse(atob(token));
+    await createTask(body, tokenData, res);
   } catch (e) {
     res.status(500);
     res.json("ERROR REGISTER USER");

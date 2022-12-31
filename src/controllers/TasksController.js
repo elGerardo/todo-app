@@ -13,7 +13,9 @@ exports.updateList = exports.deleteItem = exports.find = exports.get = exports.c
 const Tasks_1 = require("../models/Tasks");
 const get = ({ headers }, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield (0, Tasks_1.getTasks)(headers, res);
+        const token = headers.token;
+        const tokenData = JSON.parse(atob(token));
+        yield (0, Tasks_1.getTasks)(tokenData, res);
     }
     catch (e) {
         res.status(500);
@@ -34,7 +36,9 @@ const find = ({ query }, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.find = find;
 const create = ({ body, headers }, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield (0, Tasks_1.createTask)(body, headers, res);
+        const token = headers.token;
+        const tokenData = JSON.parse(atob(token));
+        yield (0, Tasks_1.createTask)(body, tokenData, res);
     }
     catch (e) {
         res.status(500);
