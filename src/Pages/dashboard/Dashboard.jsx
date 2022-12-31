@@ -69,7 +69,7 @@ let Note = (props) => {
     //if is loged
     if (JSON.parse(localStorage.getItem("login")) != null) {
       user_id = JSON.parse(localStorage.getItem("login")).user_id;
-      await new Tasks().create(postData, user_id).then((response) => {
+      await new Tasks().create(postData).then((response) => {
         if (response.status == 0) {
           setIsLoading(false);
           setIsSuccess(true);
@@ -437,8 +437,7 @@ let Dashboard = () => {
     //if is loged
     let loginData = localStorage.getItem("login");
     if (loginData != null) {
-      let data = JSON.parse(loginData);
-      new Tasks().get(data.user_id).then((response) => {
+      new Tasks().get().then((response) => {
         if (response.status == 0) {
           if (response.data.length !== 0) {
             setTasks(response.data);

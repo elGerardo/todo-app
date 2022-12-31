@@ -1,36 +1,40 @@
-const BASE_URL = "https://todo-app-production-9478.up.railway.app";
-//const BASE_URL = "http://localhost:3001";
+//const BASE_URL = "https://todo-app-production-9478.up.railway.app";
+const BASE_URL = "http://localhost:3001";
+
+const token = JSON.parse(localStorage.getItem("login"));
 
 export class Tasks {
+  async get() {
+    console.log(token);
+    return await fetch(`${BASE_URL}/tasks/get`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        token: token.token,
+      },
+    })
+      .then((response) => response.json())
+      .catch((error) => console.log(error));
+  }
+
   async find(task_id) {
     return await fetch(`${BASE_URL}/tasks/find?id=${task_id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        token: token.token,
       },
     })
       .then((response) => response.json())
       .catch((error) => console.log(error));
   }
 
-  async get(user_id) {
-    return await fetch(`${BASE_URL}/tasks/get`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        user_id: user_id,
-      },
-    })
-      .then((response) => response.json())
-      .catch((error) => console.log(error));
-  }
-
-  async create(data, user_id) {
+  async create(data) {
     return await fetch(`${BASE_URL}/tasks/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        user_id: user_id,
+        token: token.token,
       },
       body: JSON.stringify(data),
     })
@@ -43,6 +47,7 @@ export class Tasks {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
+        token: token.token,
       },
     })
       .then((response) => response.json())
@@ -56,6 +61,7 @@ export class Tasks {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          token: token.token,
         },
       }
     )
