@@ -40,7 +40,7 @@ let NotFound = () => {
             It looks like you're lost, don't worry, you always can go back where
             you came ;)
           </p>
-          <a to="/dashboard" className={`${buttons.primary}`}>
+          <a href="/dashboard" className={`${buttons.primary}`}>
             Go Back
           </a>
         </div>
