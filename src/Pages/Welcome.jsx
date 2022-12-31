@@ -1,7 +1,6 @@
 import style from "./Welcome.module.css";
 import buttons from "../assets/global/buttons.module.css";
 import { Container, Form, Spinner } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Users } from "../services/Users";
@@ -27,7 +26,6 @@ let Login = () => {
   let [isLoading, setIsLoading] = useState(false);
   let [isSuccess, setIsSuccess] = useState(false);
   let [apiMessage, setApiMessage] = useState("");
-  let navigate = useNavigate();
   let userName = useField({ type: "text", required: true });
   let password = useField({ type: "password", required: true });
 
@@ -41,15 +39,16 @@ let Login = () => {
 
     await new Users().login(postData).then((response) => {
       if (response.status == 0) {
+        localStorage.setItem(
+          "login",
+          JSON.stringify({ token: response.token, user_id: response.user_id })
+        );
+        setIsLoading(false);
+        setIsSuccess(true);
         setTimeout(() => {
-          localStorage.setItem(
-            "login",
-            JSON.stringify({ token: response.token, user_id: response.user_id })
-          );
-          setIsLoading(false);
-          setIsSuccess(true);
-          navigate("/dashboard");
-        });
+          window.location.href = "/dashboard";
+        }, 500);
+
         return;
       }
       setApiMessage(response.message);
@@ -112,7 +111,6 @@ let SignUp = () => {
   let email = useField({ type: "email", required: true });
   let password = useField({ type: "password", required: true });
   let confirmPassword = useField({ type: "password", required: true });
-  let navigate = useNavigate();
 
   //0 filling fields, 1 is saving data, 2 success
   let [isLoading, setIsLoading] = useState(0);
@@ -140,7 +138,9 @@ let SignUp = () => {
           JSON.stringify({ token: response.token, user_id: response.user_id })
         );
         setIsLoading(2);
-        navigate("/dashboard");
+        setTimeout(() => {
+          window.location.href = "/dashboard";
+        }, 500);
         return;
       }
     });
@@ -222,7 +222,7 @@ let Welcome = () => {
 
   useEffect(() => {
     localStorage.removeItem("login");
-  }, [])
+  }, []);
 
   let content = (
     <div
