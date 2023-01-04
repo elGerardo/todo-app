@@ -9,15 +9,36 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginUser = exports.registerUser = void 0;
-const mysql_1 = require("../config/mysql");
+exports.loginUser = exports.registerUser = exports.Users = void 0;
+const sequelize_1 = require("../config/sequelize");
+const sequelize_2 = require("sequelize");
+const Users = sequelize_1.sequelize.define("users", {
+    id: {
+        type: sequelize_2.DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
+    username: sequelize_2.DataTypes.STRING,
+    image: sequelize_2.DataTypes.STRING,
+    first_name: sequelize_2.DataTypes.STRING,
+    last_name: sequelize_2.DataTypes.STRING,
+    password: sequelize_2.DataTypes.STRING,
+});
+exports.Users = Users;
 const registerUser = (body, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const t = yield sequelize_1.sequelize.transaction();
     try {
-        let { username, email, password } = body;
-        let [result] = yield mysql_1.pool.query(`INSERT INTO users(username, email, password) VALUES("${username}", "${email}", "${password}")`);
+        let { username, password } = body;
+        let result = yield Users.create({
+            username: `${username}`,
+            password: `${password}`,
+        }, {
+            transaction: t,
+        });
+        yield t.commit();
         let content = {
             username: `${username}`,
-            user_id: `${result.insertId}`,
+            user_id: `${result.toJSON().id}`,
             login_datetime: `${new Date().toJSON()}`,
             type: "user",
             access: ["create", "read", "update", "delete"],
@@ -29,6 +50,7 @@ const registerUser = (body, res) => __awaiter(void 0, void 0, void 0, function* 
         });
     }
     catch (e) {
+        yield t.rollback();
         console.log(e);
         res.json({
             status: 500,
@@ -38,13 +60,22 @@ const registerUser = (body, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.registerUser = registerUser;
 const loginUser = (headers, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const t = yield sequelize_1.sequelize.transaction();
     try {
-        let { username, password } = headers;
-        let [result] = yield mysql_1.pool.query(`SELECT id, username, password FROM users where username = "${username}" and password = "${password}"`);
+        const { username, password } = headers;
+        const [result] = yield Users.findAll({
+            attributes: ["id", "username", "password"],
+            where: {
+                username: `${username}`,
+                password: `${password}`,
+            },
+            transaction: t
+        });
+        yield t.commit();
         if (result.length !== 0) {
             let content = {
                 username: `${username}`,
-                user_id: `${result[0].id}`,
+                user_id: `${result.toJSON().id}`,
                 login_datetime: `${new Date().toJSON()}`,
                 type: "user",
                 access: ["create", "read", "update", "delete"],
@@ -62,6 +93,7 @@ const loginUser = (headers, res) => __awaiter(void 0, void 0, void 0, function* 
         return;
     }
     catch (e) {
+        yield t.rollback();
         console.log(e);
         res.json({
             status: 400,

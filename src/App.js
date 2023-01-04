@@ -16,17 +16,28 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const routes_1 = require("./routes");
-const mysql_1 = require("./config/mysql");
+const sequelize_1 = require("./config/sequelize");
 const port = process.env.PORT || 3002;
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(routes_1.router);
 dotenv_1.default.config();
-app.get("/test", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let [result] = yield mysql_1.pool.query("SELECT * FROM tasks");
-    res.json(result);
-}));
-app.listen(port, () => {
-    console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
+/*
+app.get("/test", async (req: Request, res: Response) => {
+  let [result] = await pool.query("SELECT * FROM tasks");
+  res.json(result);
 });
+*/
+app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
+    yield sequelize_1.sequelize
+        .authenticate()
+        .then(() => __awaiter(void 0, void 0, void 0, function* () {
+        console.log(`⚡️[server]: Server is running`);
+        process.env.ENVIRONMENT === "local" &&
+            console.log(`at https://localhost:${port}`);
+    }))
+        .catch((error) => {
+        console.error("ERROR TO BUILD", error);
+    });
+}));

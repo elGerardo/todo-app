@@ -1,29 +1,57 @@
-import { pool } from "../config/mysql";
 import { Task } from "../interfaces/task.interface";
 import { Response } from "express";
+import { sequelize } from "../config/sequelize";
+import { DataTypes } from "sequelize";
+import { Users } from "./Users";
+import { TaskItems } from "./TaskItems";
 
-const find = async (id: any) => {
-  let [result] = await pool.query(
-    `SELECT id AS task_id, title AS title, type AS type, status AS status, description AS description, percent AS percent, status AS status FROM tasks where id = ${id}`
-  );
+const Tasks = sequelize.define(
+  "tasks",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: Users,
+        key: "id",
+      },
+    },
+    title: DataTypes.STRING,
+    description: DataTypes.STRING,
+    type: DataTypes.STRING,
+    status: DataTypes.INTEGER,
+    percent: DataTypes.INTEGER,
+  },
+  { underscored: true, timestamps: false }
+);
 
-  return result;
-};
+Tasks.hasMany(TaskItems, { as: "task_items" });
 
-const getListItems = async (id: any) => {
-  let [result] = await pool.query(
-    `SELECT description AS text, id AS task_item_id, status AS status FROM task_items WHERE task_id = ${id}`
-  );
-
-  return result;
-};
+TaskItems.hasOne(Tasks, {
+  foreignKey: "task_id",
+  as: "tasks",
+});
 
 const getTasks = async (tokenData: any, res: Response) => {
   try {
-    let { user_id } = tokenData;
-    let [result] = await pool.query(
-      `SELECT id as id, title As title, description AS description, type AS type FROM tasks WHERE user_id = ${user_id}`
-    );
+    const { user_id } = tokenData;
+
+    const result: any = await Tasks.findAll({
+      attributes: ["id", "description", "type", "title"],
+      where: {
+        user_id: `${user_id}`,
+      },
+      include: {
+        model: TaskItems,
+        as: "task_items",
+        attributes: ["status"],
+      },
+    });
+
     res.json({
       status: 0,
       message: "Success",
@@ -37,25 +65,33 @@ const getTasks = async (tokenData: any, res: Response) => {
 
 const findTask = async (id: any, res: Response) => {
   try {
-    let items: [] | null = null;
-    let resData: any;
+    const result: any = await Tasks.findAll({
+      attributes: [
+        [sequelize.literal("tasks.id"), "task_id"],
+        "description",
+        "type",
+        "title",
+      ],
+      where: {
+        id: `${id}`,
+      },
+      include: {
+        model: TaskItems,
+        as: "task_items",
+        attributes: [
+          [sequelize.literal("task_items.id"), "task_item_id"],
+          [sequelize.literal("task_items.description"), "text"],
+          "status",
+        ],
+      },
+    });
 
-    let result: any = await find(id);
-
-    resData = {
+    const resData: any = {
       status: 0,
       message: "Success",
-      data: { ...result[0], items: items },
+      data: { result },
     };
 
-    if (result[0].type == "Note") {
-      res.json(resData);
-      return;
-    }
-
-    result = await getListItems(id);
-
-    resData.data.items = result;
     res.json(resData);
     return;
   } catch (e) {
@@ -65,17 +101,25 @@ const findTask = async (id: any, res: Response) => {
 };
 
 const createTask = async (body: Task, tokenData: any, res: Response) => {
+  const t = await sequelize.transaction();
   try {
     let { title, type, description, items } = body;
     let { user_id } = tokenData;
 
-    let result: any;
-
-    [result] = await pool.query(
-      `INSERT INTO tasks(title, description, type, user_id) VALUES("${title}", "${description}", "${type}", ${user_id})`
+    const result: any = await Tasks.create(
+      {
+        title: `${title}`,
+        type: `${type}`,
+        description: `${description}`,
+        user_id: `${user_id}`,
+      },
+      {
+        transaction: t,
+      }
     );
 
-    if (items === null || type == "Note") {
+    if (items === null || items === undefined || type == "Note") {
+      await t.commit();
       res.json({
         message: "Success",
         status: 0,
@@ -83,42 +127,66 @@ const createTask = async (body: Task, tokenData: any, res: Response) => {
       return;
     }
 
-    items.forEach(async (item) => {
-      await pool.query(
-        `INSERT INTO task_items(task_id, description) VALUES("${result.insertId}", "${item.text}")`
+    for (const item of items) {
+      await TaskItems.create(
+        {
+          task_id: `${result.id}`,
+          description: item.text,
+        },
+        { transaction: t }
       );
-    });
+    }
+
+    await t.commit();
+
     res.json({
       message: "Success",
       status: 0,
     });
     return;
   } catch (e) {
+    await t.rollback();
     console.log(e);
     res.json({ message: "ERROR CREATE TASK", status: 500 });
   }
 };
 
 const deleteTask = async (body: any, res: Response) => {
+  const t = sequelize.transaction();
   try {
-    let { id, type } = body;
+    await sequelize.transaction(async (t) => {
+      let { id, type } = body;
 
-    if (type === "Note") {
-      await pool.query(`DELETE FROM tasks WHERE id = ${id}`);
+      if (type === "Note") {
+        await Tasks.destroy({
+          where: {
+            id: `${id}`,
+          },
+        });
+        res.json({
+          message: "Success",
+          status: 0,
+        });
+        return;
+      }
+
+      await TaskItems.destroy({
+        where: {
+          task_id: `${id}`,
+        },
+      });
+      await Tasks.destroy({
+        where: {
+          id: `${id}`,
+        },
+      });
+
       res.json({
         message: "Success",
         status: 0,
       });
       return;
-    }
-
-    await pool.query(`DELETE FROM task_items WHERE task_id = ${id}`);
-    await pool.query(`DELETE FROM tasks WHERE id = ${id}`);
-    res.json({
-      status: 0,
-      message: "Success",
     });
-    return;
   } catch (e) {
     console.log(e);
     res.json({
@@ -130,13 +198,18 @@ const deleteTask = async (body: any, res: Response) => {
 
 const updateListItem = async (body: any, res: Response) => {
   try {
-    let { task_item_id, status } = body;
-    await pool.query(
-      `UPDATE task_items SET status = ${status} WHERE id = ${task_item_id}`
-    );
-    res.json({
-      message: "Success",
-      status: 0,
+    await sequelize.transaction(async (t) => {
+      let { task_item_id, status } = body;
+      await TaskItems.update(
+        { status: `${status}` },
+        { where: { id: `${task_item_id}` } }
+      );
+
+      res.json({
+        message: "Success",
+        status: 0,
+      });
+      return;
     });
   } catch (e) {
     console.log(e);
@@ -145,4 +218,4 @@ const updateListItem = async (body: any, res: Response) => {
   }
 };
 
-export { createTask, getTasks, findTask, deleteTask, updateListItem };
+export { Tasks, createTask, getTasks, findTask, deleteTask, updateListItem };

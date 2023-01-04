@@ -1,17 +1,41 @@
 import { Response } from "express";
-import { pool } from "../config/mysql";
 import { RegisterUser } from "../interfaces/user.interface";
+import { sequelize } from "../config/sequelize";
+import { DataTypes } from "sequelize";
+
+const Users = sequelize.define("users", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  username: DataTypes.STRING,
+  image: DataTypes.STRING,
+  first_name: DataTypes.STRING,
+  last_name: DataTypes.STRING,
+  password: DataTypes.STRING,
+});
 
 const registerUser = async (body: RegisterUser, res: Response) => {
+  const t = await sequelize.transaction();
   try {
-    let { username, email, password } = body;
-    let [result]: any = await pool.query(
-      `INSERT INTO users(username, email, password) VALUES("${username}", "${email}", "${password}")`
+    let { username, password } = body;
+
+    let result: any = await Users.create(
+      {
+        username: `${username}`,
+        password: `${password}`,
+      },
+      {
+        transaction: t,
+      },
     );
+
+    await t.commit();
 
     let content = {
       username: `${username}`,
-      user_id: `${result.insertId}`,
+      user_id: `${result.toJSON().id}`,
       login_datetime: `${new Date().toJSON()}`,
       type: "user",
       access: ["create", "read", "update", "delete"],
@@ -23,6 +47,7 @@ const registerUser = async (body: RegisterUser, res: Response) => {
       token: btoa(JSON.stringify(content)),
     });
   } catch (e) {
+    await t.rollback();
     console.log(e);
     res.json({
       status: 500,
@@ -32,16 +57,25 @@ const registerUser = async (body: RegisterUser, res: Response) => {
 };
 
 const loginUser = async (headers: any, res: Response) => {
+  const t = await sequelize.transaction();
   try {
-    let { username, password } = headers;
-    let [result]: any = await pool.query(
-      `SELECT id, username, password FROM users where username = "${username}" and password = "${password}"`
-    );
+    const { username, password } = headers;
+
+    const [result]: any = await Users.findAll({
+      attributes: ["id", "username", "password"],
+      where: {
+        username: `${username}`,
+        password: `${password}`,
+      },
+      transaction: t
+    });
+
+    await t.commit();
 
     if (result.length !== 0) {
       let content = {
         username: `${username}`,
-        user_id: `${result[0].id}`,
+        user_id: `${result.toJSON().id}`,
         login_datetime: `${new Date().toJSON()}`,
         type: "user",
         access: ["create", "read", "update", "delete"],
@@ -60,6 +94,7 @@ const loginUser = async (headers: any, res: Response) => {
     });
     return;
   } catch (e) {
+    await t.rollback();
     console.log(e);
     res.json({
       status: 400,
@@ -68,4 +103,4 @@ const loginUser = async (headers: any, res: Response) => {
   }
 };
 
-export { registerUser, loginUser };
+export { Users, registerUser, loginUser };

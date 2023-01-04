@@ -1,7 +1,7 @@
 export interface Task {
   title: string;
   user_id: number | null;
-  type: string;
+  type: "Note" | "List";
   description: string;
   items: [TaskItem] | null;
 }
