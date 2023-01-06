@@ -108,7 +108,6 @@ let Login = () => {
 
 let SignUp = () => {
   let userName = useField({ type: "text", required: true });
-  let email = useField({ type: "email", required: true });
   let password = useField({ type: "password", required: true });
   let confirmPassword = useField({ type: "password", required: true });
 
@@ -126,7 +125,6 @@ let SignUp = () => {
     setIsLoading(1);
     let postData = {
       username: userName.value,
-      email: email.value,
       password: password.value,
       confirmPassword: confirmPassword.value,
     };
@@ -169,13 +167,6 @@ let SignUp = () => {
               <Form.Label>User Name</Form.Label>
               <Form.Control
                 {...userName}
-                disabled={isLoading !== 2 ? false : true}
-              />
-            </Form.Group>
-            <Form.Group className={`my-3`}>
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                {...email}
                 disabled={isLoading !== 2 ? false : true}
               />
             </Form.Group>
