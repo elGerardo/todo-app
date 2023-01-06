@@ -2,7 +2,6 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import { router } from "./routes";
-import { pool } from "./config/mysql";
 import { sequelize } from "./config/sequelize";
 
 const port = process.env.PORT || 3002;
