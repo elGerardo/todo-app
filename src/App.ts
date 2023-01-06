@@ -12,12 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use(router);
 dotenv.config();
-/*
-app.get("/test", async (req: Request, res: Response) => {
-  let [result] = await pool.query("SELECT * FROM tasks");
-  res.json(result);
-});
-*/
+
 app.listen(port, async () => {
   await sequelize
     .authenticate()

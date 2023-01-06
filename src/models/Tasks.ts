@@ -65,7 +65,7 @@ const getTasks = async (tokenData: any, res: Response) => {
 
 const findTask = async (id: any, res: Response) => {
   try {
-    const result: any = await Tasks.findAll({
+    const [result]: any = await Tasks.findAll({
       attributes: [
         [sequelize.literal("tasks.id"), "task_id"],
         "description",
@@ -89,7 +89,7 @@ const findTask = async (id: any, res: Response) => {
     const resData: any = {
       status: 0,
       message: "Success",
-      data: { result },
+      data: result,
     };
 
     res.json(resData);
@@ -101,58 +101,52 @@ const findTask = async (id: any, res: Response) => {
 };
 
 const createTask = async (body: Task, tokenData: any, res: Response) => {
-  const t = await sequelize.transaction();
   try {
-    let { title, type, description, items } = body;
-    let { user_id } = tokenData;
+    await sequelize.transaction(async (t) => {
+      let { title, type, description, items } = body;
+      let { user_id } = tokenData;
 
-    const result: any = await Tasks.create(
-      {
-        title: `${title}`,
-        type: `${type}`,
-        description: `${description}`,
-        user_id: `${user_id}`,
-      },
-      {
-        transaction: t,
+      const result: any = await Tasks.create(
+        {
+          title: `${title}`,
+          type: `${type}`,
+          description: `${description}`,
+          user_id: `${user_id}`,
+        },
+        { transaction: t }
+      );
+
+      if (items === null || items === undefined || type == "Note") {
+        res.json({
+          message: "Success",
+          status: 0,
+        });
+        return;
       }
-    );
 
-    if (items === null || items === undefined || type == "Note") {
-      await t.commit();
+      for (const item of items) {
+        await TaskItems.create(
+          {
+            task_id: `${result.id}`,
+            description: item.text,
+          },
+          { transaction: t }
+        );
+      }
+
       res.json({
         message: "Success",
         status: 0,
       });
       return;
-    }
-
-    for (const item of items) {
-      await TaskItems.create(
-        {
-          task_id: `${result.id}`,
-          description: item.text,
-        },
-        { transaction: t }
-      );
-    }
-
-    await t.commit();
-
-    res.json({
-      message: "Success",
-      status: 0,
     });
-    return;
   } catch (e) {
-    await t.rollback();
     console.log(e);
     res.json({ message: "ERROR CREATE TASK", status: 500 });
   }
 };
 
 const deleteTask = async (body: any, res: Response) => {
-  const t = sequelize.transaction();
   try {
     await sequelize.transaction(async (t) => {
       let { id, type } = body;
@@ -162,6 +156,7 @@ const deleteTask = async (body: any, res: Response) => {
           where: {
             id: `${id}`,
           },
+          transaction: t,
         });
         res.json({
           message: "Success",
@@ -174,11 +169,13 @@ const deleteTask = async (body: any, res: Response) => {
         where: {
           task_id: `${id}`,
         },
+        transaction: t,
       });
       await Tasks.destroy({
         where: {
           id: `${id}`,
         },
+        transaction: t,
       });
 
       res.json({
@@ -198,11 +195,12 @@ const deleteTask = async (body: any, res: Response) => {
 
 const updateListItem = async (body: any, res: Response) => {
   try {
+    console.log(body);
     await sequelize.transaction(async (t) => {
       let { task_item_id, status } = body;
       await TaskItems.update(
-        { status: `${status}` },
-        { where: { id: `${task_item_id}` } }
+        { status: status === "false" ? 0 : 1 },
+        { where: { id: `${task_item_id}` }, transaction: t }
       );
 
       res.json({

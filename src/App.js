@@ -23,12 +23,6 @@ app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(routes_1.router);
 dotenv_1.default.config();
-/*
-app.get("/test", async (req: Request, res: Response) => {
-  let [result] = await pool.query("SELECT * FROM tasks");
-  res.json(result);
-});
-*/
 app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
     yield sequelize_1.sequelize
         .authenticate()

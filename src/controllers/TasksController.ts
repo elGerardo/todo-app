@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Task } from "../interfaces/task.interface";
 import {
   createTask,
   getTasks,

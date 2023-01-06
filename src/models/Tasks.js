@@ -67,7 +67,7 @@ const getTasks = (tokenData, res) => __awaiter(void 0, void 0, void 0, function*
 exports.getTasks = getTasks;
 const findTask = (id, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield Tasks.findAll({
+        const [result] = yield Tasks.findAll({
             attributes: [
                 [sequelize_1.sequelize.literal("tasks.id"), "task_id"],
                 "description",
@@ -90,7 +90,7 @@ const findTask = (id, res) => __awaiter(void 0, void 0, void 0, function* () {
         const resData = {
             status: 0,
             message: "Success",
-            data: { result },
+            data: result,
         };
         res.json(resData);
         return;
@@ -102,48 +102,43 @@ const findTask = (id, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.findTask = findTask;
 const createTask = (body, tokenData, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const t = yield sequelize_1.sequelize.transaction();
     try {
-        let { title, type, description, items } = body;
-        let { user_id } = tokenData;
-        const result = yield Tasks.create({
-            title: `${title}`,
-            type: `${type}`,
-            description: `${description}`,
-            user_id: `${user_id}`,
-        }, {
-            transaction: t,
-        });
-        if (items === null || items === undefined || type == "Note") {
-            yield t.commit();
+        yield sequelize_1.sequelize.transaction((t) => __awaiter(void 0, void 0, void 0, function* () {
+            let { title, type, description, items } = body;
+            let { user_id } = tokenData;
+            const result = yield Tasks.create({
+                title: `${title}`,
+                type: `${type}`,
+                description: `${description}`,
+                user_id: `${user_id}`,
+            }, { transaction: t });
+            if (items === null || items === undefined || type == "Note") {
+                res.json({
+                    message: "Success",
+                    status: 0,
+                });
+                return;
+            }
+            for (const item of items) {
+                yield TaskItems_1.TaskItems.create({
+                    task_id: `${result.id}`,
+                    description: item.text,
+                }, { transaction: t });
+            }
             res.json({
                 message: "Success",
                 status: 0,
             });
             return;
-        }
-        for (const item of items) {
-            yield TaskItems_1.TaskItems.create({
-                task_id: `${result.id}`,
-                description: item.text,
-            }, { transaction: t });
-        }
-        yield t.commit();
-        res.json({
-            message: "Success",
-            status: 0,
-        });
-        return;
+        }));
     }
     catch (e) {
-        yield t.rollback();
         console.log(e);
         res.json({ message: "ERROR CREATE TASK", status: 500 });
     }
 });
 exports.createTask = createTask;
 const deleteTask = (body, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const t = sequelize_1.sequelize.transaction();
     try {
         yield sequelize_1.sequelize.transaction((t) => __awaiter(void 0, void 0, void 0, function* () {
             let { id, type } = body;
@@ -152,6 +147,7 @@ const deleteTask = (body, res) => __awaiter(void 0, void 0, void 0, function* ()
                     where: {
                         id: `${id}`,
                     },
+                    transaction: t,
                 });
                 res.json({
                     message: "Success",
@@ -163,11 +159,13 @@ const deleteTask = (body, res) => __awaiter(void 0, void 0, void 0, function* ()
                 where: {
                     task_id: `${id}`,
                 },
+                transaction: t,
             });
             yield Tasks.destroy({
                 where: {
                     id: `${id}`,
                 },
+                transaction: t,
             });
             res.json({
                 message: "Success",
@@ -187,9 +185,10 @@ const deleteTask = (body, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.deleteTask = deleteTask;
 const updateListItem = (body, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        console.log(body);
         yield sequelize_1.sequelize.transaction((t) => __awaiter(void 0, void 0, void 0, function* () {
             let { task_item_id, status } = body;
-            yield TaskItems_1.TaskItems.update({ status: `${status}` }, { where: { id: `${task_item_id}` } });
+            yield TaskItems_1.TaskItems.update({ status: status === "false" ? 0 : 1 }, { where: { id: `${task_item_id}` }, transaction: t });
             res.json({
                 message: "Success",
                 status: 0,
