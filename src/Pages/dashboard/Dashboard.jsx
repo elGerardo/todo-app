@@ -441,7 +441,6 @@ let Dashboard = () => {
     if (loginData != null) {
       await new Tasks().get().then((response) => {
         console.log(response);
-        //TODO
         if (response.status == 0) {
           if (response.data.length !== 0) {
             setTasks(response.data);
