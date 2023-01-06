@@ -271,9 +271,11 @@ let Detail = (props) => {
     let loginData = localStorage.getItem("login");
     if (loginData != null) {
       await new Tasks().find(props.selectedData.id).then((response) => {
+        console.log(response);
         if (response.status == 0) {
           setItem(response.data);
-          if (response.data.type == "List") setListItems(response.data.items);
+          if (response.data.type == "List")
+            setListItems(response.data.task_items);
           setIsLoading(false);
           return;
         }
@@ -336,7 +338,7 @@ let Detail = (props) => {
             </span>
 
             {!isLoading ? (
-              <div className={``}>
+              <div>
                 <h1>{item.title}</h1>
                 <p>{item.description}</p>
 
@@ -367,7 +369,7 @@ let Detail = (props) => {
                     );
                   })}
                 {item.type == "List" && (
-                  <div className={`d-flex align-items-center`}>
+                  <div className={`d-flex align-items-center my-4`}>
                     {(parseInt(
                       listItems.filter((item) => item.status == 1).length
                     ) /
@@ -395,7 +397,7 @@ let Detail = (props) => {
                       </motion.div>
                     )}
                     <ProgressBar
-                      className={`m-5 w-100`}
+                      className={`m-3 w-100`}
                       now={
                         (parseInt(
                           listItems.filter((item) => item.status == 1).length
@@ -433,11 +435,12 @@ let Dashboard = () => {
   let [isContentGrid, setIsContentGrid] = useState(false);
   let [selectedData, setSelectedData] = useState({ id: null });
 
-  let getTasks = () => {
+  let getTasks = async () => {
     //if is loged
     let loginData = localStorage.getItem("login");
     if (loginData != null) {
-      new Tasks().get().then((response) => {
+      await new Tasks().get().then((response) => {
+        console.log(response);
         if (response.status == 0) {
           if (response.data.length !== 0) {
             setTasks(response.data);
@@ -460,6 +463,7 @@ let Dashboard = () => {
     if (loginData != null) {
       let data = JSON.parse(loginData);
       await new Tasks().get(data.user_id).then((response) => {
+        console.log(response);
         if (response.status == 0) {
           if (response.data.length !== 0) {
             setTasks(response.data);
@@ -506,7 +510,7 @@ let Dashboard = () => {
         <div className={`${style.control_header} w-100 position-fixed p-3`}>
           <Container className={`d-flex justify-content-between`}>
             <div>
-              <a className={`${buttons.primary} py-1`} href="/">
+              <a className={`${buttons.primary}`} style={{padding:"0.25rem 0.75rem"}} href="/">
                 Logout
               </a>
             </div>
@@ -515,8 +519,8 @@ let Dashboard = () => {
                 className={`${buttons.primary} mx-3`}
                 onClick={() => setModalShow(true)}
               >
-                <FontAwesomeIcon icon={faPlus} />{" "}
-                <span className={``}>Add</span>
+                <FontAwesomeIcon icon={faPlus} />
+                <span>Add</span>
               </button>
               <button
                 onClick={() => setIsContentGrid(!isContentGrid)}
@@ -567,7 +571,7 @@ let Dashboard = () => {
                         src="https://assets.reedpopcdn.com/mario-kart-8-deluxe-dlc-release-time-9016-1647514624847.jpg/BROK/thumbnail/1600x900/format/jpg/quality/80/mario-kart-8-deluxe-dlc-release-time-9016-1647514624847.jpg"
                   />*/}
                       <div
-                        className={`w-75`}
+                        className={`w-100`}
                         onClick={() => {
                           setSelectedData({
                             id:
@@ -586,6 +590,59 @@ let Dashboard = () => {
                           {task.description.substr(0, 126)}{" "}
                           {task.description.length > 126 && "..."}
                         </p>
+                        {task.type === "List" && (
+                          <div className={`d-flex align-items-center`}>
+                            {(parseInt(
+                              task.task_items.filter((item) => item.status == 1)
+                                .length
+                            ) /
+                              parseInt(task.task_items.length)) *
+                              100 !==
+                            100 ? (
+                              <FontAwesomeIcon
+                                className={`text-light display-4`}
+                                icon={faCircle}
+                              />
+                            ) : (
+                              <motion.div
+                                key="finished"
+                                initial={{ opacity: 0, scale: 0.5 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{
+                                  duration: 0.5,
+                                  ease: [0, 0.71, 0.2, 1.01],
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  className={`text-success display-4`}
+                                  icon={faCircleCheck}
+                                />
+                              </motion.div>
+                            )}
+
+                            <ProgressBar
+                              className={`m-3 w-100`}
+                              now={
+                                (parseInt(
+                                  task.task_items.filter(
+                                    (item) => item.status == 1
+                                  ).length
+                                ) /
+                                  parseInt(task.task_items.length)) *
+                                100
+                              }
+                              label={`${(
+                                (parseInt(
+                                  task.task_items.filter(
+                                    (item) => item.status == 1
+                                  ).length
+                                ) /
+                                  parseInt(task.task_items.length)) *
+                                100
+                              ).toFixed(0)}%`}
+                            />
+                          </div>
+                        )}
                       </div>
                       <FontAwesomeIcon
                         icon={faTrash}
@@ -624,7 +681,10 @@ let Dashboard = () => {
       />
       <Detail
         selectedData={selectedData}
-        emitselecteddata={(data) => setSelectedData(data)}
+        emitselecteddata={(data) => {
+          setSelectedData(data);
+          getTasks();
+        }}
       />
     </div>
   );
@@ -633,3 +693,4 @@ let Dashboard = () => {
 };
 
 export default Dashboard;
+//TODO create a progress bar component

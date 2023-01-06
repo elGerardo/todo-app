@@ -14,6 +14,7 @@
 .primary_badge
 {
     color: #FFFFFF;
+    z-index: 2;
 }
 
 .primary,
