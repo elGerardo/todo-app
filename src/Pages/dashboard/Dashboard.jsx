@@ -271,7 +271,6 @@ let Detail = (props) => {
     let loginData = localStorage.getItem("login");
     if (loginData != null) {
       await new Tasks().find(props.selectedData.id).then((response) => {
-        console.log(response);
         if (response.status == 0) {
           setItem(response.data);
           if (response.data.type == "List")
@@ -440,7 +439,6 @@ let Dashboard = () => {
     let loginData = localStorage.getItem("login");
     if (loginData != null) {
       await new Tasks().get().then((response) => {
-        console.log(response);
         if (response.status == 0) {
           if (response.data.length !== 0) {
             setTasks(response.data);
@@ -463,7 +461,6 @@ let Dashboard = () => {
     if (loginData != null) {
       let data = JSON.parse(loginData);
       await new Tasks().get(data.user_id).then((response) => {
-        console.log(response);
         if (response.status == 0) {
           if (response.data.length !== 0) {
             setTasks(response.data);
