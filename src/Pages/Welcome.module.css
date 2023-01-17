@@ -1,9 +1,46 @@
+.container {
+  height: 90vh;
+}
+
 .container h1 {
   font-size: 4.2rem;
 }
 
 .container p {
   font-size: 1.8rem;
+}
+
+.info_content {
+  width: 50%;
+}
+
+.container_examples {
+  height: 100vh;
+}
+
+@media only screen and (max-width:1202px) {
+  .container_examples p {
+    font-size: 1.2rem;
+  }
+
+  .container_examples h1 {
+    font-size: 1.4rem;
+  }
+}
+
+@media only screen and (max-width:840px) {
+  .info_content {
+    width: 100%;
+  }
+
+  .container_examples p {
+    font-size: 1rem;
+  }
+
+  .container_examples h1 {
+    font-size: 1.2rem;
+  }
+
 }
 
 .bg_welcome {
@@ -34,7 +71,6 @@
 
 .container input[type="text"],
 .container input[type="password"],
-.container input[type="email"]
-{
+.container input[type="email"] {
   background-color: #f8f8f8;
 }
