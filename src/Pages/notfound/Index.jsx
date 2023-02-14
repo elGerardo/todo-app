@@ -1,27 +1,8 @@
 import style from "./NotFound.module.css";
 import buttons from "../../assets/global/buttons.module.css";
-import { Link } from "react-router-dom";
+import LineStyle from "./LineStyle";
 
-let LineStyle = (props) => {
-  let content = (
-    <span
-      className={`${style.line} position-absolute`}
-      style={{
-        top: `${props.top}`,
-        bottom: `${props.bottom}`,
-        left: `${props.left}`,
-        right: `${props.right}`,
-        transform: `rotate(${props.rotate}deg)`,
-        height: `${props.height}rem`,
-        width: `${props.width}rem`,
-        background: `${props.bg}`,
-      }}
-    ></span>
-  );
-  return content;
-};
-
-let NotFound = () => {
+let Index = () => {
   let content = (
     <div
       className={`${style.container} d-flex align-items-center justify-content-center`}
@@ -102,8 +83,7 @@ let NotFound = () => {
           width="25"
           bg="#eb3349"
         />
-
-<LineStyle
+        <LineStyle
           right="-5rem"
           top="5rem"
           rotate="135"
@@ -118,4 +98,4 @@ let NotFound = () => {
   return content;
 };
 
-export default NotFound;
+export default Index;

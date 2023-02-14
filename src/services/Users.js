@@ -1,9 +1,7 @@
-const BASE_URL = "https://todo-app-production-9478.up.railway.app";
-//const BASE_URL = "http://localhost:3001";
 
 export class Users {
   async login(data) {
-    return await fetch(`${BASE_URL}/users/login`, {
+    return await fetch(`${import.meta.env.VITE_API_URL}/users/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -16,7 +14,7 @@ export class Users {
   }
 
   async register(data) {
-    return await fetch(`${BASE_URL}/users/register`, {
+    return await fetch(`${import.meta.env.VITE_API_URL}/users/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

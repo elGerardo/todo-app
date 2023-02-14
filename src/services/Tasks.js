@@ -1,11 +1,8 @@
-const BASE_URL = "https://todo-app-production-9478.up.railway.app";
-//const BASE_URL = "http://localhost:3001";
-
 const token = JSON.parse(localStorage.getItem("login"));
 
 export class Tasks {
   async get() {
-    return await fetch(`${BASE_URL}/tasks/get`, {
+    return await fetch(`${import.meta.env.VITE_API_URL}/tasks/get`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -17,7 +14,7 @@ export class Tasks {
   }
 
   async find(task_id) {
-    return await fetch(`${BASE_URL}/tasks/find?id=${task_id}`, {
+    return await fetch(`${import.meta.env.VITE_API_URL}/tasks/find?id=${task_id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -29,7 +26,7 @@ export class Tasks {
   }
 
   async create(data) {
-    return await fetch(`${BASE_URL}/tasks/create`, {
+    return await fetch(`${import.meta.env.VITE_API_URL}/tasks/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -42,7 +39,7 @@ export class Tasks {
   }
 
   async deleteItem({ id, type }) {
-    return await fetch(`${BASE_URL}/tasks/delete?id=${id}&type=${type}`, {
+    return await fetch(`${import.meta.env.VITE_API_URL}/tasks/delete?id=${id}&type=${type}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -55,7 +52,7 @@ export class Tasks {
 
   async updateListItem(task_item_id, value) {
     return await fetch(
-      `${BASE_URL}/tasks/updateList?task_item_id=${task_item_id}&status=${value}`,
+      `${import.meta.env.VITE_API_URL}/tasks/updateList?task_item_id=${task_item_id}&status=${value}`,
       {
         method: "POST",
         headers: {

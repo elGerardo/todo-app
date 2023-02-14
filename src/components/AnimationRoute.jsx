@@ -1,9 +1,9 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 
-import Welcome from "../Pages/Welcome.jsx";
-import NotFound from "../Pages/notfound/NotFound.jsx";
-import Dashboard from "../Pages/dashboard/Dashboard.jsx";
+import Welcome from "../Pages";
+import NotFound from "../Pages/notFound";
+import Dashboard from "../Pages/dashboard";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 
 let AnimationRoute = () => {
@@ -13,12 +13,15 @@ let AnimationRoute = () => {
     <AnimatePresence>
       <Routes location={location} key={location.pathname}>
         <Route index element={<Welcome />} />
-        <Route path='*' element={<NotFound />}/>
-        <Route path="dashboard" element={
-        <ProtectedRoute>
-          <Dashboard />
-        </ProtectedRoute>
-        } />
+        <Route path="*" element={<NotFound />} />
+        <Route
+          path="dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </AnimatePresence>
   );
